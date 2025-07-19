@@ -5,24 +5,31 @@ import Button from "@/components/button";
 import Link from "next/link";
 
 // hooks
-import { useState, FormEvent, ChangeEvent } from "react";
+import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
+import { loadComponents } from "next/dist/server/load-components";
 
 const page: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
 
-  const { login } = useAuth();
+  const { login, isAuthenticated, loading } = useAuth();
   const router = useRouter();
+
+  useEffect(() => {
+    if (!loading && isAuthenticated) {
+      router.push("/");
+    }
+  }, [isAuthenticated, loading, router]);
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
 
     try {
       await login(email, password);
-      router.push("/dashboard");
+      router.push("/");
     } catch (error) {
       console.log("Falha no login: ", error);
       setError("Email ou senha incorretos!");
@@ -90,15 +97,6 @@ const page: React.FC = () => {
           </label>
           <Button text="Entrar" />
         </form>
-        <p className="self-center mt-2">
-          Não possui conta?{" "}
-          <Link
-            href="/cadastro"
-            className="text-violet-600 hover:text-violet-900"
-          >
-            Crie clicando aqui
-          </Link>
-        </p>
       </div>
     </div>
   );

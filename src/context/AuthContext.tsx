@@ -53,11 +53,11 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
   }, []);
 
   const login = async (email: string, senha: string): Promise<void> => {
-    const { data } = await api.post<{ acess_token: string; user: User }>(
+    const { data } = await api.post<{ access_token: string; user: User }>(
       "/auth/login",
       { email, senha }
     );
-    localStorage.setItem("token", data.acess_token);
+    localStorage.setItem("token", data.access_token);
     setUser(data.user);
   };
 
