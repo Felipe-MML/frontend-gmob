@@ -10,6 +10,15 @@ interface Corretor {
   data_cadastro: string;
 }
 
+export interface CreateCorretorDto {
+  nome_completo: string;
+  email: string;
+  telefone: string;
+  cpf: string;
+  senha: string;
+  perfil?: "corretor" | "administrador";
+}
+
 // Paginação
 interface CorretoresResponse {
   corretores: Corretor[];
@@ -35,6 +44,27 @@ export const getCorretores = async (
     return data;
   } catch (error) {
     console.error("Erro ao buscar corretores: ", error);
+    throw error;
+  }
+};
+
+export const deleteCorretor = async (id: number): Promise<void> => {
+  try {
+    await api.delete(`/corretor/${id}`);
+  } catch (error) {
+    console.log(`Erro ao apagar o corretor com ID ${id}:`, error);
+    throw error;
+  }
+};
+
+export const createCorretor = async (
+  corretorData: CreateCorretorDto
+): Promise<Corretor> => {
+  try {
+    const { data } = await api.post<Corretor>("/corretor", corretorData);
+    return data;
+  } catch (error) {
+    console.log("Erro ao criar corretor: ", error);
     throw error;
   }
 };
