@@ -1,5 +1,8 @@
 "use client";
+// Components
+import Table from "@/components/table";
 
+// Hooks
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
@@ -16,11 +19,7 @@ const HomePage = () => {
     }
   }, [isAuthenticated, loading, router]);
 
-  return (
-    <>
-      <h1>Tela de home</h1>
-    </>
-  );
+  return <></>;
 };
 
 export default HomePage;
