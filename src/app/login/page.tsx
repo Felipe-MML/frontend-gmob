@@ -8,12 +8,14 @@ import Link from "next/link";
 import { useState, FormEvent, ChangeEvent, useEffect } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useRouter } from "next/navigation";
-import { loadComponents } from "next/dist/server/load-components";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 const page: React.FC = () => {
   const [email, setEmail] = useState<string>("");
   const [password, setPassword] = useState<string>("");
   const [error, setError] = useState<string>("");
+
+  const [showPassword, setShowPassword] = useState(false);
 
   const { login, isAuthenticated, loading } = useAuth();
   const router = useRouter();
@@ -62,11 +64,11 @@ const page: React.FC = () => {
             <input
               type="email"
               name="userEmail"
-              placeholder="Digite seu email..."
+              placeholder="Digite seu email"
               required
               value={email}
               onChange={handleEmailChange}
-              className="border border-gray-200 h-10 rounded-md focus:outline-none"
+              className="border border-gray-200 h-10 rounded-md focus:outline-none p-2"
             />
           </label>
           <div className="flex flex-col mt-3">
@@ -80,16 +82,24 @@ const page: React.FC = () => {
                 Esqueceu sua senha?
               </Link>
             </div>
-
-            <input
-              type="password"
-              id="password"
-              placeholder="••••••••"
-              required
-              className="border border-gray-200 h-10 rounded-md focus:outline-none"
-              value={password}
-              onChange={handlePasswordChange}
-            />
+            <div className="relative">
+              <input
+                id="senha"
+                type={showPassword ? "text" : "password"}
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                required
+                className="w-full border border-gray-300 rounded-md p-2"
+                placeholder="Digite sua senha"
+              />
+              <button
+                type="button"
+                onClick={() => setShowPassword(!showPassword)}
+                className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
+              >
+                {showPassword ? <FaEyeSlash /> : <FaEye />}
+              </button>
+            </div>
           </div>
           <label>
             <input type="checkbox" name="rememberUser" className="mt-5 mb-5" />
@@ -97,6 +107,11 @@ const page: React.FC = () => {
           </label>
           <Button text="Entrar" />
         </form>
+        {error && (
+          <p className="self-center text-red-500 mt-2">
+            Email ou Senha Incorretos!
+          </p>
+        )}
       </div>
     </div>
   );
