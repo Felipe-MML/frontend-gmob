@@ -9,7 +9,7 @@ interface FilterAccordionProps {
 const Filters = ({ children, title }: FilterAccordionProps) => {
   const [isOpen, setIsOpen] = useState(false);
   return (
-    <div className="w-full rounded-lg border border-gray-200 bg-white max-w-[1126px]">
+    <div className="w-full rounded-lg border border-gray-200 bg-white max-w-6xl">
       <button
         onClick={() => setIsOpen(!isOpen)}
         className="flex w-full items-center justify-between p-4 focus:outline-none"

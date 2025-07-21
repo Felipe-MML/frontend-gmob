@@ -186,43 +186,49 @@ const CorretoresPageContent = () => {
   }
 
   return (
-    <div className="flex flex-col justify-center h-screen p-4 ml-30">
-      <div className="flex justify-between max-w-[1126px] w-auto">
-        <PageTitle title="Tabela de Corretores" />
-        <AddButton
-          text="+ Adicionar"
-          openModal={() => setIsAddModalOpen(true)}
+    <div className="w-full flex flex-col items-center ">
+      <div className="w-full max-w-6xl">
+        <div className="flex justify-between items-center mb-8">
+          <PageTitle title="Tabela de Corretores" />
+          <AddButton
+            text="+ Adicionar"
+            openModal={() => setIsAddModalOpen(true)}
+          />
+        </div>
+
+        <Filters title="Filtros">
+          <DataRangeFilter
+            dateStart={dateStart}
+            dateEnd={dateEnd}
+            onFilterChange={handleFilterChange}
+          />
+        </Filters>
+
+        <div className="w-full max-w-6xl mt-5">
+          <Table data={corretoresFilter} columns={columns}></Table>
+        </div>
+
+        <AddCorretorModal
+          open={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSave={handleSaveCorretor}
         />
+
+        <DeleteModal
+          open={isModalOpen}
+          onClose={() => setIsModalOpen(false)}
+          onConfirm={handleConfirmeDelete}
+          title="Apagar Corretor"
+        >
+          <p>
+            Tem a certeza que deseja apagar o corretor{" "}
+            <strong>
+              {corretorToDelete && corretorToDelete.nome_completo}
+            </strong>
+            ?
+          </p>
+        </DeleteModal>
       </div>
-
-      <Filters title="Filtros">
-        <DataRangeFilter
-          dateStart={dateStart}
-          dateEnd={dateEnd}
-          onFilterChange={handleFilterChange}
-        />
-      </Filters>
-      <div className="w-full max-w-[1126px] mt-5">
-        <Table data={corretoresFilter} columns={columns}></Table>
-      </div>
-
-      <AddCorretorModal
-        open={isAddModalOpen}
-        onClose={() => setIsAddModalOpen(false)}
-        onSave={handleSaveCorretor}
-      />
-
-      <DeleteModal
-        open={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        onConfirm={handleConfirmeDelete}
-        title="Apagar Corretor"
-      >
-        <p>
-          Tem a certeza que deseja apagar o corretor{" "}
-          <strong>{corretorToDelete && corretorToDelete.nome_completo}</strong>?
-        </p>
-      </DeleteModal>
     </div>
   );
 };

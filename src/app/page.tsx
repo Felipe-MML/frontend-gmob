@@ -6,6 +6,7 @@ import Table from "@/components/table";
 import { useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useAuth } from "@/context/AuthContext";
+import Navbar from "@/components/navBar";
 
 const HomePage = () => {
   const { isAuthenticated, loading } = useAuth();
