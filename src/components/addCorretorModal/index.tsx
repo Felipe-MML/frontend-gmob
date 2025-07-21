@@ -9,6 +9,7 @@ import {
 
 import { CreateCorretorDto } from "@/services/corretorService";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { IMaskInput } from "react-imask";
 
 interface addCorretorModalProps {
   open: boolean;
@@ -98,26 +99,28 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
             </div>
             <div>
               <label htmlFor="telefone">Telefone</label>
-              <input
+              <IMaskInput
+                mask="(00) 00000-0000"
                 id="telefone"
                 type="text"
                 value={telefone}
-                onChange={(e) => setTelefone(e.target.value)}
+                onAccept={(value: any) => setTelefone(value)}
                 required
                 className="w-full border border-gray-300 rounded-md p-2"
-                placeholder="Digite o Telefone do Corretor..."
+                placeholder="(XX) XXXXX-XXXX"
               />
             </div>
             <div>
               <label htmlFor="cpf">CPF</label>
-              <input
+              <IMaskInput
+                mask="000.000.000-00"
                 id="cpf"
                 type="text"
                 value={cpf}
-                onChange={(e) => setCpf(e.target.value)}
+                onAccept={(value: any) => setCpf(value)}
                 required
                 className="w-full border border-gray-300 rounded-md p-2"
-                placeholder="Digite o CPF do Corretor..."
+                placeholder="000.000.000-00"
               />
             </div>
             <div>
