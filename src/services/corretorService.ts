@@ -41,7 +41,7 @@ interface CorretoresResponse {
 
 export const getCorretores = async (
   page = 1,
-  limit = 10
+  limit = 5
 ): Promise<CorretoresResponse> => {
   try {
     const { data } = await api.get<CorretoresResponse>("/corretor", {

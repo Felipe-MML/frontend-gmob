@@ -26,6 +26,7 @@ import PageTitle from "@/components/pagetitle";
 import AddButton from "@/components/addButton";
 import AddCorretorModal from "@/components/addCorretorModal";
 import EditCorretorModal from "@/components/editCorretorModal";
+import Pagination from "@/components/Pagination";
 
 interface Corretor {
   corretor_id: number;
@@ -43,11 +44,13 @@ const CorretoresPageContent = () => {
   // Corretores
   const {
     corretores,
+    pagination,
     loading,
     error,
     addCorretor,
     editCorretor,
     removeCorretor,
+    handlePageChange,
   } = useCorretores();
 
   const [dateStart, setDateStart] = useState<string>("");
@@ -182,6 +185,14 @@ const CorretoresPageContent = () => {
         <div className="w-full max-w-6xl mt-5">
           <Table data={corretoresFilter} columns={columns}></Table>
         </div>
+
+        {pagination && pagination.totalPages > 1 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
 
         <AddCorretorModal
           open={isAddModalOpen}

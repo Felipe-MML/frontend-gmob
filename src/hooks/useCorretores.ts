@@ -10,13 +10,22 @@ import {
 } from "@/services/corretorService";
 import { useAuth } from "@/context/AuthContext";
 
+interface PaginationData {
+  page: number;
+  limit: number;
+  total: number;
+  totalPages: number;
+}
+
 interface UseCorretoresReturn {
   corretores: Corretor[];
+  pagination: PaginationData | null;
   loading: boolean;
   error: string | null;
   addCorretor: (data: CreateCorretorDto) => Promise<void>;
   editCorretor: (id: number, data: UpdateCorretorDto) => Promise<void>;
   removeCorretor: (id: number) => Promise<void>;
+  handlePageChange: (page: number) => void;
 }
 
 export const useCorretores = (): UseCorretoresReturn => {
@@ -24,6 +33,8 @@ export const useCorretores = (): UseCorretoresReturn => {
   const [corretores, setCorretores] = useState<Corretor[]>([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pagination, setPagination] = useState<PaginationData | null>(null);
 
   useEffect(() => {
     if (user?.perfil !== "administrador") {
@@ -36,8 +47,9 @@ export const useCorretores = (): UseCorretoresReturn => {
 
     const fetchCorretores = async () => {
       try {
-        const response = await getCorretores();
+        const response = await getCorretores(currentPage);
         setCorretores(response.corretores);
+        setPagination(response.pagination);
       } catch (err) {
         setError("Não foi possível carregar a lista de corretores.");
       } finally {
@@ -46,7 +58,7 @@ export const useCorretores = (): UseCorretoresReturn => {
     };
 
     fetchCorretores();
-  }, [user]);
+  }, [user, currentPage]);
 
   const addCorretor = async (corretorData: CreateCorretorDto) => {
     try {
@@ -82,10 +94,12 @@ export const useCorretores = (): UseCorretoresReturn => {
 
   return {
     corretores,
+    pagination,
     loading,
     error,
     addCorretor,
     editCorretor,
     removeCorretor,
+    handlePageChange: setCurrentPage,
   };
 };
