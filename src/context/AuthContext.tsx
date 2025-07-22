@@ -23,6 +23,7 @@ interface AuthContextData {
   loading: boolean;
   login: (email: string, senha: string) => Promise<void>;
   logout: () => Promise<void>;
+  updateUser: (userData: User) => void;
 }
 
 interface AuthProviderProps {
@@ -67,9 +68,20 @@ export const AuthProvider = ({ children }: AuthProviderProps) => {
     setUser(null);
   };
 
+  const updateUser = (userData: User) => {
+    setUser(userData);
+  };
+
   return (
     <AuthContext.Provider
-      value={{ isAuthenticated: !!user, user, login, logout, loading }}
+      value={{
+        isAuthenticated: !!user,
+        user,
+        login,
+        logout,
+        loading,
+        updateUser,
+      }}
     >
       {children}
     </AuthContext.Provider>

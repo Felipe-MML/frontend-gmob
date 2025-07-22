@@ -20,6 +20,7 @@ const pathNames: { [key: string]: string } = {
   clientes: "Clientes",
   imoveis: "Imóveis",
   visitas: "Visitas",
+  profile: "Perfil",
 };
 
 const MainLayout = ({ children }: MainLayoutProps) => {
