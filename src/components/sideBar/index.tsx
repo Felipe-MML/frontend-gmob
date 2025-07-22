@@ -4,6 +4,7 @@ import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaUsers, FaHome, FaCalendarCheck, FaUserTie } from "react-icons/fa";
 import Link from "next/link";
+import { useAuth } from "@/context/AuthContext";
 
 interface MenuItem {
   href: string;
@@ -26,6 +27,15 @@ const menuItems: MenuItem[] = [
 export default function Sidebar() {
   const [hovered, setHovered] = useState(false);
   const pathname = usePathname();
+  const { user } = useAuth();
+
+  // Filtra os menus com base no perfil
+  const filteredMenuItems = menuItems.filter((item) => {
+    if (item.label === "Corretores") {
+      return user?.perfil === "administrador";
+    }
+    return true;
+  });
 
   return (
     <aside
@@ -46,7 +56,7 @@ export default function Sidebar() {
 
       {/* Menu */}
       <nav className="mt-4 ms-2 flex flex-col gap-1">
-        <SidebarMenu items={menuItems} show={hovered} activePath={pathname} />
+        <SidebarMenu items={filteredMenuItems} show={hovered} activePath={pathname} />
       </nav>
     </aside>
   );
