@@ -6,22 +6,26 @@ import {
   deleteCorretor,
   createCorretor,
   CreateCorretorDto,
+  updateCorretor,
+  UpdateCorretorDto,
 } from "@/services/corretorService";
 
 // Hooks
-import { useEffect, useState, useMemo } from "react";
+import { useState, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useCorretores } from "@/hooks/useCorretores";
 
 // Components
 import Table, { ColumDef } from "@/components/table";
 import PrivateRoute from "@/components/privateRoute";
 import Filters from "@/components/filters";
 import DataRangeFilter from "@/components/dataRangeFilter";
-import { FaTrash } from "react-icons/fa";
+import { FaTrash, FaPencilAlt } from "react-icons/fa";
 import DeleteModal from "@/components/deleteModal";
 import PageTitle from "@/components/pagetitle";
 import AddButton from "@/components/addButton";
 import AddCorretorModal from "@/components/addCorretorModal";
+import EditCorretorModal from "@/components/editCorretorModal";
 
 interface Corretor {
   corretor_id: number;
@@ -30,16 +34,21 @@ interface Corretor {
   telefone: string;
   cpf: string;
   data_cadastro: string;
+  perfil: "corretor" | "administrador";
 }
 
 const CorretoresPageContent = () => {
   const { user } = useAuth();
-  const [corretores, setCorretores] = useState<Corretor[]>([]);
-  const [corretorToDelete, setCorretorToDelete] = useState<Corretor | null>(
-    null
-  );
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+
+  // Corretores
+  const {
+    corretores,
+    loading,
+    error,
+    addCorretor,
+    editCorretor,
+    removeCorretor,
+  } = useCorretores();
 
   const [dateStart, setDateStart] = useState<string>("");
   const [dateEnd, setDateEnd] = useState<string>("");
@@ -47,6 +56,11 @@ const CorretoresPageContent = () => {
   // Modals
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+  const [selectedCorretor, setSelectedCorretor] = useState<Corretor | null>(
+    null
+  );
 
   // Colunas da tabela:
 
@@ -83,11 +97,22 @@ const CorretoresPageContent = () => {
       accessorKey: "corretor_id",
       header: "Ações",
       cell: (row) => (
-        <div className="flex justify-center">
+        <div className="flex justify-center items-center space-x-4">
           <button
-            onClick={() => handleOpenConfirmModal(row)}
+            onClick={() => {
+              setSelectedCorretor(row);
+              setIsEditModalOpen(true);
+            }}
+            className="text-blue-500 hover:text-blue-700"
+          >
+            <FaPencilAlt />
+          </button>
+          <button
+            onClick={() => {
+              setSelectedCorretor(row);
+              setIsDeleteModalOpen(true);
+            }}
             className="text-red-500 hover:text-red-700"
-            title="Apagar corretor"
           >
             <FaTrash />
           </button>
@@ -95,67 +120,6 @@ const CorretoresPageContent = () => {
       ),
     },
   ];
-
-  useEffect(() => {
-    if (user?.perfil !== "administrador") {
-      setError(
-        "Acesso negado. Você não tem permissão para acessar essa página"
-      );
-      setLoading(false);
-      return;
-    }
-
-    const fetchCorretores = async () => {
-      try {
-        const response = await getCorretores();
-        setCorretores(response.corretores);
-      } catch (err) {
-        setError("Não foi possivel carregar a lista de corretores");
-      } finally {
-        setLoading(false);
-      }
-    };
-
-    fetchCorretores();
-  }, [user]);
-
-  // Adicionar Corretor:
-  const handleSaveCorretor = async (corretorData: CreateCorretorDto) => {
-    try {
-      const newCorretor = await createCorretor(corretorData);
-
-      setCorretores((currentCorretores) => [newCorretor, ...currentCorretores]);
-      setIsAddModalOpen(false);
-    } catch (error) {
-      console.log("Erro ao salvar: ", error);
-
-      throw error;
-    }
-  };
-
-  // Deletar o corretor:
-  const handleOpenConfirmModal = (corretor: Corretor) => {
-    setCorretorToDelete(corretor);
-    setIsModalOpen(true);
-  };
-
-  const handleConfirmeDelete = async () => {
-    if (!corretorToDelete) return;
-
-    try {
-      await deleteCorretor(corretorToDelete.corretor_id);
-      setCorretores((currentCorretores) =>
-        currentCorretores.filter(
-          (c) => c.corretor_id !== corretorToDelete.corretor_id
-        )
-      );
-    } catch (error) {
-      alert("Erro ao apagar o corretor");
-    } finally {
-      setIsModalOpen(false);
-      setCorretorToDelete(null);
-    }
-  };
 
   // Lógica para Filtrar as Datas:
   const corretoresFilter = useMemo(() => {
@@ -168,6 +132,17 @@ const CorretoresPageContent = () => {
       return true;
     });
   }, [corretores, dateStart, dateEnd]);
+
+  const handleConfirmeDelete = async () => {
+    if (!selectedCorretor) return;
+    await removeCorretor(selectedCorretor.corretor_id);
+    setIsDeleteModalOpen(false);
+  };
+
+  const handleSaveEdit = async (id: number, data: UpdateCorretorDto) => {
+    await editCorretor(id, data);
+    setIsEditModalOpen(false);
+  };
 
   const handleFilterChange = (datas: {
     dateStart: string;
@@ -211,19 +186,26 @@ const CorretoresPageContent = () => {
         <AddCorretorModal
           open={isAddModalOpen}
           onClose={() => setIsAddModalOpen(false)}
-          onSave={handleSaveCorretor}
+          onSave={addCorretor}
+        />
+
+        <EditCorretorModal
+          open={isEditModalOpen}
+          onClose={() => setIsEditModalOpen(false)}
+          onSave={handleSaveEdit}
+          corretor={selectedCorretor}
         />
 
         <DeleteModal
-          open={isModalOpen}
-          onClose={() => setIsModalOpen(false)}
+          open={isDeleteModalOpen}
+          onClose={() => setIsDeleteModalOpen(false)}
           onConfirm={handleConfirmeDelete}
           title="Apagar Corretor"
         >
           <p>
             Tem a certeza que deseja apagar o corretor{" "}
             <strong>
-              {corretorToDelete && corretorToDelete.nome_completo}
+              {selectedCorretor && selectedCorretor.nome_completo}
             </strong>
             ?
           </p>

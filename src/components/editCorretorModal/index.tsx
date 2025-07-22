@@ -1,6 +1,11 @@
 "use client";
 import { useState, useEffect, FormEvent } from "react";
-import { Dialog, DialogPanel, DialogTitle } from "@headlessui/react";
+import {
+  Dialog,
+  DialogPanel,
+  DialogTitle,
+  DialogBackdrop,
+} from "@headlessui/react";
 import { Corretor, UpdateCorretorDto } from "@/services/corretorService";
 
 interface EditCorretorModalProps {
@@ -50,9 +55,16 @@ const EditCorretorModal = ({
   };
   return (
     <Dialog open={open} onClose={onClose} className="relative z-10">
+      <DialogBackdrop
+        transition
+        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+      />
       <div className="fixed inset-0 bg-black/30" aria-hidden="true" />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6">
+        <DialogPanel
+          transition
+          className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:sm:translate-y-0 data-closed:sm:scale-95"
+        >
           <DialogTitle className="text-lg font-bold">
             Editar Corretor
           </DialogTitle>
