@@ -1,10 +1,32 @@
 "use client";
 
+import { useState } from "react";
 import { useAuth } from "@/context/AuthContext";
 import PrivateRoute from "@/components/privateRoute";
+import EditCorretorModal from "@/components/editCorretorModal";
+import {
+  updateCorretor,
+  UpdateCorretorDto,
+  Corretor,
+} from "@/services/corretorService";
 
 const ProfileContent = () => {
-  const { user } = useAuth();
+  const { user, updateUser } = useAuth();
+
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false);
+
+  const handleUpdateProfile = async (id: number, data: UpdateCorretorDto) => {
+    try {
+      const corretorAtualizado = await updateCorretor(id, data);
+
+      updateUser(corretorAtualizado);
+      setIsEditModalOpen(false);
+    } catch (error) {
+      console.error("Falha ao atualizar perfil: ", error);
+      alert("Não foi possível atualizar o perfil. Tente novamente.");
+      throw error;
+    }
+  };
 
   if (!user) {
     return <div>Carregando perfil...</div>;
@@ -19,6 +41,13 @@ const ProfileContent = () => {
               {user.nome_completo}
             </h1>
             <p className="text-md text-gray-500 capitalize">{user.perfil}</p>
+
+            <button
+              onClick={() => setIsEditModalOpen(true)}
+              className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 mt-3"
+            >
+              Editar Perfil
+            </button>
 
             <div className="mt-6">
               <div className="flex flex-col md:flex-row md:space-x-12">
@@ -63,6 +92,12 @@ const ProfileContent = () => {
           </div>
         </div>
       </div>
+      <EditCorretorModal
+        open={isEditModalOpen}
+        onClose={() => setIsEditModalOpen(false)}
+        onSave={handleUpdateProfile}
+        corretor={user}
+      />
     </div>
   );
 };
