@@ -1,6 +1,6 @@
 import api from "./api";
 
-interface Corretor {
+export interface Corretor {
   corretor_id: number;
   nome_completo: string;
   email: string;
@@ -16,6 +16,15 @@ export interface CreateCorretorDto {
   telefone: string;
   cpf: string;
   senha: string;
+  perfil?: "corretor" | "administrador";
+}
+
+export interface UpdateCorretorDto {
+  nome_completo?: string;
+  email?: string;
+  telefone?: string;
+  cpf?: string;
+  senha?: string;
   perfil?: "corretor" | "administrador";
 }
 
@@ -65,6 +74,19 @@ export const createCorretor = async (
     return data;
   } catch (error) {
     console.log("Erro ao criar corretor: ", error);
+    throw error;
+  }
+};
+
+export const updateCorretor = async (
+  id: number,
+  corretorData: UpdateCorretorDto
+): Promise<Corretor> => {
+  try {
+    const { data } = await api.patch<Corretor>(`/corretor/${id}`, corretorData);
+    return data;
+  } catch (error) {
+    console.log(`Erro ao atualizar o corretor com ID ${id}: `, error);
     throw error;
   }
 };
