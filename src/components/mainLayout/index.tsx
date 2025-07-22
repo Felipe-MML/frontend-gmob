@@ -60,6 +60,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
           userName={user?.nome_completo || "Utilizador"}
           breadcrumbCrumbs={breadcrumbCrumbs}
           currentPath={pathname}
+          perfil={user?.perfil || "Corretor"}
         />
         <main className="flex flex-1 overflow-y-auto p-8">{children}</main>
       </div>
