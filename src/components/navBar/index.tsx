@@ -11,7 +11,7 @@ interface AvatarProps {
   onClick?: () => void;
 }
 
-function Avatar({ name, onClick }: AvatarProps) {
+export function Avatar({ name, onClick }: AvatarProps) {
   const initials = useMemo(() => {
     return name
       .split(" ")
