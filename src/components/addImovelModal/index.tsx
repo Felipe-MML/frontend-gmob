@@ -7,7 +7,11 @@ import {
   DialogBackdrop,
 } from "@headlessui/react";
 
-import { CreateImovelDto, TipoImovel, getTiposImoveis } from "@/services/imovelService";
+import {
+  CreateImovelDto,
+  TipoImovel,
+  getTiposImoveis,
+} from "@/services/imovelService";
 
 interface AddImovelModalProps {
   open: boolean;
@@ -26,6 +30,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
   const [valor, setValor] = useState("");
   const [area, setArea] = useState("");
   const [error, setError] = useState<string | null>(null);
+  const [numeroComodos, setNumeroComodos] = useState("");
 
   // Buscar tipos de imóveis quando o modal abrir
   useEffect(() => {
@@ -62,6 +67,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         cidade,
         rua,
         numero,
+        numero_comodos: parseInt(numeroComodos) || 0,
         valor: parseFloat(valor),
         area: parseFloat(area),
       });
@@ -89,7 +95,9 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <DialogPanel className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
-          <DialogTitle className="text-lg font-bold">Adicionar Novo Imóvel</DialogTitle>
+          <DialogTitle className="text-lg font-bold">
+            Adicionar Novo Imóvel
+          </DialogTitle>
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             {/* Tipo Imóvel */}
             <div>
@@ -193,6 +201,24 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                 required
                 className="w-full rounded-md border border-gray-300 p-2"
                 placeholder="Número"
+              />
+            </div>
+
+            <div>
+              <label
+                htmlFor="numero_comodos"
+                className="block mb-1 font-medium"
+              >
+                Número de Cômodos
+              </label>
+              <input
+                id="numero_comodos"
+                type="text"
+                value={numeroComodos}
+                onChange={(e) => setNumeroComodos(e.target.value)}
+                required
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Número de Cômodos"
               />
             </div>
 

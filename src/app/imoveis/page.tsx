@@ -45,7 +45,7 @@ interface Imovel {
 const ImoveisPageContent = () => {
   const { user } = useAuth();
   const {
-    imoveis,
+    data: imoveis,
     loading,
     error,
     addImovel,
@@ -70,7 +70,7 @@ const ImoveisPageContent = () => {
     {
       accessorKey: "valor",
       header: "Valor",
-      cell: (row) => `R$ ${row.valor.toFixed(2).replace(".", ",")}`,
+      cell: (row) => `R$ ${row.valor}`,
     },
     {
       accessorKey: "area",
@@ -123,7 +123,6 @@ const ImoveisPageContent = () => {
     });
   }, [imoveis, dateStart, dateEnd]);
 
-
   const handleDelete = async () => {
     if (!selectedImovel) return;
     await removeImovel(selectedImovel.imovel_id);
@@ -151,7 +150,10 @@ const ImoveisPageContent = () => {
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <PageTitle title="Tabela de Imóveis" />
-          <AddButton text="+ Adicionar" openModal={() => setIsAddModalOpen(true)} />
+          <AddButton
+            text="+ Adicionar"
+            openModal={() => setIsAddModalOpen(true)}
+          />
         </div>
 
         <Filters title="Filtros">
@@ -187,7 +189,10 @@ const ImoveisPageContent = () => {
         >
           <p>
             Tem certeza que deseja apagar o imóvel em{" "}
-            <strong>{selectedImovel?.rua}, {selectedImovel?.numero}</strong>?
+            <strong>
+              {selectedImovel?.rua}, {selectedImovel?.numero}
+            </strong>
+            ?
           </p>
         </DeleteModal>
       </div>

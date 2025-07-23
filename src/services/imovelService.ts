@@ -28,14 +28,14 @@ export interface CreateImovelDto {
   complemento?: string;
   valor: number;
   area: number;
-  numero_comodos?: number;
+  numero_comodos: number;
   descricao?: string;
 }
 
 export interface UpdateImovelDto extends Partial<CreateImovelDto> {}
 
 export interface ImoveisResponse {
-  imoveis: Imovel[];
+  data: Imovel[];
   pagination: {
     page: number;
     limit: number;
@@ -128,9 +128,13 @@ export const getTiposImoveis = async (): Promise<TipoImovel[]> => {
   }
 };
 
-export const createTipoImovel = async (nome_tipo: string): Promise<TipoImovel> => {
+export const createTipoImovel = async (
+  nome_tipo: string
+): Promise<TipoImovel> => {
   try {
-    const { data } = await api.post<TipoImovel>("/tipos-imoveis", { nome_tipo });
+    const { data } = await api.post<TipoImovel>("/tipos-imoveis", {
+      nome_tipo,
+    });
     return data;
   } catch (error) {
     console.error("Erro ao criar tipo de imóvel:", error);
