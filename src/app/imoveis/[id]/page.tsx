@@ -3,14 +3,18 @@
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
 import PrivateRoute from "@/components/privateRoute";
+import RealizeTransaction from "@/components/realizeTransaction";
 
 import { getImovelById, Imovel } from "@/services/imovelService";
 import { getCorretorById, Corretor } from "@/services/corretorService";
+
+import AgendarVisitaModal from "@/components/agendarVisitaModal";
 
 const ImovelPageContent = () => {
   const params = useParams();
   const id = params.id as string;
 
+  const [isTransacaoModalOpen, setIsTransacaoModalOpen] = useState(false);
   const [imovel, setImovel] = useState<Imovel | null>(null);
   const [corretor, setCorretor] = useState<Corretor | null>(null);
   const [loading, setLoading] = useState(true);
@@ -127,22 +131,22 @@ const ImovelPageContent = () => {
             </div>
             {imovel.status === "disponivel" ? (
               <div className="mt-8 gap-3 flex ">
-                <button className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer">
+                <button
+                  onClick={() => setIsTransacaoModalOpen(true)}
+                  className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer"
+                >
                   Realizar Transação
                 </button>
                 <button className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer">
-                  Realizar Visita
+                  Agendar Visita
                 </button>
               </div>
             ) : (
               <div className="mt-8 gap-3 flex flex-col ">
-                <p>Esse imóvel Já foi {imovel.status}</p>
+                <p className="font-bold">Esse imóvel Já foi {imovel.status}</p>
                 <div className="flex gap-3">
                   <button className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer">
                     Ver detalhes
-                  </button>
-                  <button className="bg-red-500 p-2 rounded-2xl text-white hover:bg-red-700 w-40 hover:cursor-pointer">
-                    Excluir
                   </button>
                 </div>
               </div>
@@ -150,6 +154,11 @@ const ImovelPageContent = () => {
           </div>
         </div>
       </div>
+      <RealizeTransaction
+        open={isTransacaoModalOpen}
+        onClose={() => setIsTransacaoModalOpen(false)}
+        imovel={imovel}
+      />
     </div>
   );
 };
