@@ -1,17 +1,10 @@
 "use client";
 
-import React, { useMemo, useState } from "react";
-import { FaPencilAlt, FaTrash } from "react-icons/fa";
+import React, { useEffect, useState } from "react";
+import { FaPencilAlt, FaTrash, FaEye } from "react-icons/fa";
 
 // API
-import {
-  getImoveis,
-  deleteImovel,
-  createImovel,
-  updateImovel,
-  CreateImovelDto,
-  UpdateImovelDto,
-} from "@/services/imovelService";
+import { UpdateImovelDto } from "@/services/imovelService";
 
 // Hooks
 import { useAuth } from "@/context/AuthContext";
@@ -27,6 +20,8 @@ import DataRangeFilter from "@/components/dataRangeFilter";
 import DeleteModal from "@/components/deleteModal";
 import AddImovelModal from "@/components/addImovelModal";
 import EditImovelModal from "@/components/editImovelModal";
+import Pagination from "@/components/Pagination";
+import Link from "next/link";
 
 interface Imovel {
   imovel_id: number;
@@ -46,11 +41,13 @@ const ImoveisPageContent = () => {
   const { user } = useAuth();
   const {
     data: imoveis,
+    pagination,
     loading,
     error,
     addImovel,
     editImovel,
     removeImovel,
+    setParams,
   } = useImoveis();
 
   const [dateStart, setDateStart] = useState<string>("");
@@ -60,6 +57,21 @@ const ImoveisPageContent = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedImovel, setSelectedImovel] = useState<Imovel | null>(null);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setParams((prevParams) => ({
+        ...prevParams,
+        page: 1,
+        datainicio: dateStart || undefined,
+        datafim: dateEnd || undefined,
+      }));
+    }, 500);
+
+    return () => {
+      clearTimeout(handler);
+    };
+  }, [dateStart, dateEnd, setParams]);
 
   const columns: ColumDef<Imovel>[] = [
     { accessorKey: "status", header: "Status" },
@@ -89,6 +101,12 @@ const ImoveisPageContent = () => {
       header: "Ações",
       cell: (row) => (
         <div className="flex justify-center items-center space-x-4">
+          <Link
+            href={`/imoveis/${row.imovel_id}`}
+            className="text-green-500 hover:text-green-700"
+          >
+            <FaEye />
+          </Link>
           <button
             onClick={() => {
               setSelectedImovel(row);
@@ -112,16 +130,12 @@ const ImoveisPageContent = () => {
     },
   ];
 
-  const imoveisFiltrados = useMemo(() => {
-    if (!imoveis) return []; // proteção caso imoveis seja undefined ou null
-
-    return imoveis.filter((imovel: Imovel) => {
-      const data = imovel.data_cadastro.split("T")[0];
-      if (dateStart && data < dateStart) return false;
-      if (dateEnd && data > dateEnd) return false;
-      return true;
-    });
-  }, [imoveis, dateStart, dateEnd]);
+  const handlePageChange = (page: number) => {
+    setParams((prevParams) => ({
+      ...prevParams,
+      page,
+    }));
+  };
 
   const handleDelete = async () => {
     if (!selectedImovel) return;
@@ -165,8 +179,16 @@ const ImoveisPageContent = () => {
         </Filters>
 
         <div className="w-full max-w-6xl mt-5">
-          <Table data={imoveisFiltrados} columns={columns} />
+          <Table data={imoveis ?? []} columns={columns} />
         </div>
+
+        {pagination && pagination.totalPages > 1 && (
+          <Pagination
+            currentPage={pagination.page}
+            totalPages={pagination.totalPages}
+            onPageChange={handlePageChange}
+          />
+        )}
 
         <AddImovelModal
           open={isAddModalOpen}

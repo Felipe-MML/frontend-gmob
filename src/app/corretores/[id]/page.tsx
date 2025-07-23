@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useParams } from "next/navigation";
-import { useAuth } from "@/context/AuthContext";
 import PrivateRoute from "@/components/privateRoute";
 import { getCorretorById, Corretor } from "@/services/corretorService";
 

@@ -34,12 +34,19 @@ export interface CreateImovelDto {
 
 export interface UpdateImovelDto extends Partial<CreateImovelDto> {}
 
+interface ApiImoveisResponse {
+  data: Imovel[];
+  total: number;
+  page: number;
+  lastPage: number;
+}
+
 export interface ImoveisResponse {
   data: Imovel[];
   pagination: {
+    total: number;
     page: number;
     limit: number;
-    total: number;
     totalPages: number;
   };
 }
@@ -58,6 +65,8 @@ export interface GetImoveisParams {
   valorMax?: number;
   estado?: string;
   tipo_imovel_id?: number;
+  datainicio?: string;
+  datafim?: string;
 }
 
 // ========== Imóveis ==========
@@ -65,20 +74,33 @@ export const getImoveis = async (
   params: GetImoveisParams = {}
 ): Promise<ImoveisResponse> => {
   try {
-    const { data } = await api.get<ImoveisResponse>("/imoveis", { params });
-    return data;
+    const { data: apiResponse } = await api.get<ApiImoveisResponse>(
+      "/imoveis",
+      { params }
+    );
+    const response: ImoveisResponse = {
+      data: apiResponse.data,
+      pagination: {
+        total: apiResponse.total,
+        page: apiResponse.page,
+        totalPages: apiResponse.lastPage,
+        limit: params.limit || 5,
+      },
+    };
+
+    return response;
   } catch (error) {
     console.error("Erro ao buscar imóveis:", error);
     throw error;
   }
 };
 
-export const getImovelById = async (id: number): Promise<Imovel> => {
+export const getImovelById = async (id: string): Promise<Imovel> => {
   try {
     const { data } = await api.get<Imovel>(`/imoveis/${id}`);
     return data;
   } catch (error) {
-    console.error(`Erro ao buscar imóvel ID ${id}:`, error);
+    console.error(`Erro ao buscar o imóvel com ID ${id}:`, error);
     throw error;
   }
 };
