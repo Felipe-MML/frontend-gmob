@@ -9,12 +9,13 @@ import Table, { ColumDef } from "@/components/table";
 import Pagination from "@/components/Pagination";
 import EditClienteModal from "@/components/editClientModal";
 import DeleteModal from "@/components/deleteModal";
-import { FaPencilAlt, FaArchive } from "react-icons/fa";
+import { FaPencilAlt, FaArchive, FaEye } from "react-icons/fa";
 import { Cliente, UpdateClienteDto } from "@/services/clienteService";
 import AddClienteModal from "@/components/addClienteModal";
 import Filters from "@/components/filters";
 import DataRangeFilter from "@/components/dataRangeFilter";
 import InterestFilter from "@/components/interestFilter";
+import Link from "next/link";
 
 const ClientesPageContent = () => {
   const {
@@ -84,7 +85,13 @@ const ClientesPageContent = () => {
       accessorKey: "cliente_id",
       header: "Ações",
       cell: (row) => (
-        <div className="flex justify-center items-center space-x-4">
+        <div className="flex  space-x-4">
+          <Link
+            href={`/clientes/${row.cliente_id}`}
+            className="text-green-500 hover:text-green-700"
+          >
+            <FaEye />
+          </Link>
           <button
             onClick={() => handleOpenEditModal(row)}
             className="text-blue-500 hover:text-blue-700"

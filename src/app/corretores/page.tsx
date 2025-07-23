@@ -1,14 +1,7 @@
 "use client";
 
 // API
-import {
-  getCorretores,
-  deleteCorretor,
-  createCorretor,
-  CreateCorretorDto,
-  updateCorretor,
-  UpdateCorretorDto,
-} from "@/services/corretorService";
+import { UpdateCorretorDto } from "@/services/corretorService";
 
 // Hooks
 import { useState, useMemo } from "react";
@@ -20,13 +13,14 @@ import Table, { ColumDef } from "@/components/table";
 import PrivateRoute from "@/components/privateRoute";
 import Filters from "@/components/filters";
 import DataRangeFilter from "@/components/dataRangeFilter";
-import { FaTrash, FaPencilAlt } from "react-icons/fa";
+import { FaTrash, FaPencilAlt, FaEye } from "react-icons/fa";
 import DeleteModal from "@/components/deleteModal";
 import PageTitle from "@/components/pagetitle";
 import AddButton from "@/components/addButton";
 import AddCorretorModal from "@/components/addCorretorModal";
 import EditCorretorModal from "@/components/editCorretorModal";
 import Pagination from "@/components/Pagination";
+import Link from "next/link";
 
 interface Corretor {
   corretor_id: number;
@@ -39,8 +33,6 @@ interface Corretor {
 }
 
 const CorretoresPageContent = () => {
-  const { user } = useAuth();
-
   // Corretores
   const {
     corretores,
@@ -57,7 +49,6 @@ const CorretoresPageContent = () => {
   const [dateEnd, setDateEnd] = useState<string>("");
 
   // Modals
-  const [isModalOpen, setIsModalOpen] = useState(false);
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -100,7 +91,13 @@ const CorretoresPageContent = () => {
       accessorKey: "corretor_id",
       header: "Ações",
       cell: (row) => (
-        <div className="flex justify-center items-center space-x-4">
+        <div className="flex space-x-4">
+          <Link
+            href={`/corretores/${row.corretor_id}`}
+            className="text-green-500 hover:text-green-700"
+          >
+            <FaEye />
+          </Link>
           <button
             onClick={() => {
               setSelectedCorretor(row);

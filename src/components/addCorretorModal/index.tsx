@@ -25,6 +25,7 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const [isSaving, setIsSaving] = useState(false);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
@@ -51,6 +52,7 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
       setConfirmarSenha("");
       setError(null);
       setMostrarSenha(false);
+      setIsSaving(true);
       onClose();
     } catch (error) {
       setError("Erro ao cadastrar corretor. Verifique os dados");
@@ -179,9 +181,10 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
               </button>
               <button
                 type="submit"
-                className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700"
+                disabled={isSaving}
+                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
               >
-                Salvar
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>

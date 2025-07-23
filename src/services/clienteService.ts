@@ -4,6 +4,7 @@ import { Corretor } from "./corretorService";
 
 export interface Cliente {
   cliente_id: number;
+  corretor_id: number;
   nome: string;
   cpf: string;
   email: string;
@@ -69,4 +70,14 @@ export const updateCliente = async (
 
 export const archiveClient = async (id: number): Promise<void> => {
   await api.patch(`/clientes/${id}/arquivar`);
+};
+
+export const getClienteById = async (id: string): Promise<Cliente> => {
+  try {
+    const { data } = await api.get<Cliente>(`/clientes/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Erro ao buscar o cliente com ID ${id}:`, error);
+    throw error;
+  }
 };
