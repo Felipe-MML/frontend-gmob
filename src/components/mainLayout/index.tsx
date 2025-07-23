@@ -28,18 +28,25 @@ const MainLayout = ({ children }: MainLayoutProps) => {
   const pathname = usePathname();
 
   const breadcrumbCrumbs = useMemo(() => {
-    // Vai dividir a url para colocar os nomes
     const pathSegments = pathname.split("/").filter((segment) => segment);
-
     const crumbs: Crumb[] = [{ label: "Página Inicial", href: "/" }];
-
     let currentPath = "";
+
     for (const segment of pathSegments) {
       currentPath += `/${segment}`;
       const label = pathNames[segment];
       if (label) {
         crumbs.push({ label, href: currentPath });
       }
+    }
+
+    if (pathSegments.length > 1 && pathNames[pathSegments[0]]) {
+      const parentLabel = pathNames[pathSegments[0]];
+
+      const singularLabel =
+        parentLabel === "Corretores " ? parentLabel.slice(0, -2) : parentLabel;
+
+      crumbs.push({ label: `Visualização do ${singularLabel}` });
     }
 
     return crumbs;

@@ -90,3 +90,13 @@ export const updateCorretor = async (
     throw error;
   }
 };
+
+export const getCorretorById = async (id: string): Promise<Corretor> => {
+  try {
+    const { data } = await api.get<Corretor>(`/corretor/${id}`);
+    return data;
+  } catch (error) {
+    console.error(`Erro ao buscar o corretor com ID ${id}:`, error);
+    throw error;
+  }
+};
