@@ -14,6 +14,14 @@ export interface Cliente {
   corretor: Corretor;
 }
 
+interface ClienteFilters {
+  page?: number;
+  limit?: number;
+  tipoInteresse?: string;
+  datainicio?: string;
+  datafim?: string;
+}
+
 export interface CreateClienteDto {
   nome_completo: string;
   cpf: string;
@@ -35,13 +43,15 @@ export interface ClientesResponse {
 }
 
 export const getClientes = async (
-  page = 1,
-  limit = 5
+  filters: ClienteFilters = {}
 ): Promise<ClientesResponse> => {
-  const { data } = await api.get("/clientes", { params: { page, limit } });
+  const params = Object.fromEntries(
+    Object.entries(filters).filter(([, value]) => value !== "" && value != null)
+  );
+
+  const { data } = await api.get("/clientes", { params });
   return data;
 };
-
 export const createCliente = async (
   clienteData: CreateClienteDto
 ): Promise<Cliente> => {

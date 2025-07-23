@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   getClientes,
   archiveClient,
@@ -26,37 +26,45 @@ export const useClientes = () => {
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [currentPage, setCurrentPage] = useState(1);
+  const [tipoInteresse, setTipoInteresse] = useState("");
+  const [dataInicio, setDataInicio] = useState("");
+  const [dataFim, setDataFim] = useState("");
 
-  useEffect(() => {
-    if (!user) return;
-
-    const fetchClientes = async () => {
+  const fetchClientes = useCallback(
+    async (pageToFetch: number) => {
+      if (!user) return;
       setLoading(true);
       try {
-        const response = await getClientes(currentPage);
-
-        setClientes(response.clientes);
+        const response = await getClientes({
+          page: pageToFetch,
+          limit: 5,
+          tipoInteresse,
+          datainicio: dataInicio,
+          datafim: dataFim,
+        });
+        setClientes(response.clientes || []);
         setPagination(response.pagination);
       } catch (err) {
         setError("Não foi possível carregar a lista de clientes.");
+        setClientes([]);
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [user, tipoInteresse, dataInicio, dataFim]
+  );
 
-    fetchClientes();
-  }, [user, currentPage]);
+  useEffect(() => {
+    fetchClientes(currentPage);
+  }, [fetchClientes, currentPage]);
 
   const addCliente = async (data: CreateClienteDto) => {
-    const novoCliente = await createCliente(data);
-    const response = await getClientes(currentPage);
+    await createCliente(data);
 
-    setClientes(response.clientes);
-    setPagination(response.pagination);
     if (currentPage !== 1) {
       setCurrentPage(1);
     } else {
-      const response = await getClientes(1);
+      fetchClientes(1);
     }
   };
 
@@ -69,7 +77,8 @@ export const useClientes = () => {
 
   const archiveClienteHook = async (id: number) => {
     await archiveClient(id);
-    setClientes((atuais) => atuais.filter((c) => c.cliente_id !== id));
+
+    fetchClientes(currentPage);
   };
 
   return {
@@ -81,5 +90,7 @@ export const useClientes = () => {
     editCliente,
     removeCliente: archiveClienteHook,
     handlePageChange: setCurrentPage,
+    filters: { tipoInteresse, dataInicio, dataFim },
+    setFilters: { setTipoInteresse, setDataInicio, setDataFim },
   };
 };

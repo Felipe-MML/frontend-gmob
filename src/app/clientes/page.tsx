@@ -13,6 +13,8 @@ import { FaPencilAlt, FaArchive } from "react-icons/fa";
 import { Cliente, UpdateClienteDto } from "@/services/clienteService";
 import AddClienteModal from "@/components/addClienteModal";
 import Filters from "@/components/filters";
+import DataRangeFilter from "@/components/dataRangeFilter";
+import InterestFilter from "@/components/interestFilter";
 
 const ClientesPageContent = () => {
   const {
@@ -24,6 +26,8 @@ const ClientesPageContent = () => {
     addCliente,
     removeCliente,
     editCliente,
+    filters,
+    setFilters,
   } = useClientes();
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
@@ -114,11 +118,24 @@ const ClientesPageContent = () => {
           />
         </div>
 
-        <Filters title="Filtros">
-          <p>Teste</p>
-        </Filters>
-
-        {/* Aqui você pode adicionar os filtros se desejar */}
+        <div className="mb-6">
+          <Filters title="Filtros">
+            <div className="flex flex-col md:flex-row gap-4">
+              <DataRangeFilter
+                dateStart={filters.dataInicio}
+                dateEnd={filters.dataFim}
+                onFilterChange={({ dateStart, dateEnd }) => {
+                  setFilters.setDataInicio(dateStart);
+                  setFilters.setDataFim(dateEnd);
+                }}
+              />
+              <InterestFilter
+                value={filters.tipoInteresse}
+                onChange={setFilters.setTipoInteresse}
+              />
+            </div>
+          </Filters>
+        </div>
 
         <div className="w-full mt-5">
           <Table data={clientes} columns={columns} />
