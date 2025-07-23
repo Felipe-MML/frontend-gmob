@@ -3,22 +3,14 @@
 import { useState, useEffect } from "react";
 import {
   getClientes,
-  deleteCliente,
+  archiveClient,
   createCliente,
   updateCliente,
   CreateClienteDto,
   UpdateClienteDto,
   Cliente,
-  ClientesResponse,
 } from "@/services/clienteService";
 import { useAuth } from "@/context/AuthContext";
-
-interface paginationData {
-  page: number;
-  limit: number;
-  total: number;
-  totalPages: number;
-}
 
 interface PaginationData {
   page: number;
@@ -43,18 +35,8 @@ export const useClientes = () => {
       try {
         const response = await getClientes(currentPage);
 
-        if (response && Array.isArray(response.clientes)) {
-          setClientes(response.clientes);
-          setPagination(response.pagination);
-        } else if (Array.isArray(response)) {
-          setClientes(response);
-          setPagination(null);
-          console.warn(
-            "API retornou um array de clientes sem dados de paginação."
-          );
-        } else {
-          throw new Error("Formato de resposta da API inválido.");
-        }
+        setClientes(response.clientes);
+        setPagination(response.pagination);
       } catch (err) {
         setError("Não foi possível carregar a lista de clientes.");
       } finally {
@@ -67,13 +49,10 @@ export const useClientes = () => {
 
   const addCliente = async (data: CreateClienteDto) => {
     const novoCliente = await createCliente(data);
-    const clientesData = await getClientes(currentPage);
+    const response = await getClientes(currentPage);
 
-    if (Array.isArray(clientesData)) {
-      setClientes(clientesData);
-    } else {
-      setClientes([]);
-    }
+    setClientes(response.clientes);
+    setPagination(response.pagination);
     if (currentPage !== 1) {
       setCurrentPage(1);
     } else {
@@ -88,8 +67,8 @@ export const useClientes = () => {
     );
   };
 
-  const removeCliente = async (id: number) => {
-    await deleteCliente(id);
+  const archiveClienteHook = async (id: number) => {
+    await archiveClient(id);
     setClientes((atuais) => atuais.filter((c) => c.cliente_id !== id));
   };
 
@@ -100,7 +79,7 @@ export const useClientes = () => {
     error,
     addCliente,
     editCliente,
-    removeCliente,
+    removeCliente: archiveClienteHook,
     handlePageChange: setCurrentPage,
   };
 };

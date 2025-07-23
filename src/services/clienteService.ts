@@ -57,6 +57,6 @@ export const updateCliente = async (
   return data;
 };
 
-export const deleteCliente = async (id: number): Promise<void> => {
-  await api.delete(`/clientes/${id}`);
+export const archiveClient = async (id: number): Promise<void> => {
+  await api.patch(`/clientes/${id}/arquivar`);
 };
