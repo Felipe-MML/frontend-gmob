@@ -1,12 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import {
   getImoveis,
-  deleteImovel,
+  Imovel,
+  ImoveisResponse,
+  GetImoveisParams,
   createImovel,
   updateImovel,
+  deleteImovel,
   CreateImovelDto,
   UpdateImovelDto,
-  Imovel,
 } from "@/services/imovelService";
 import { useAuth } from "@/context/AuthContext";
 
@@ -25,47 +27,50 @@ interface UseImoveisReturn {
   addImovel: (data: CreateImovelDto) => Promise<void>;
   editImovel: (id: number, data: UpdateImovelDto) => Promise<void>;
   removeImovel: (id: number) => Promise<void>;
-  handlePageChange: (page: number) => void;
+  setPagination: React.Dispatch<React.SetStateAction<PaginationData | null>>;
+  setParams: React.Dispatch<React.SetStateAction<GetImoveisParams>>;
 }
-export const useImoveis = (): UseImoveisReturn => {
+
+export const useImoveis = (
+  initialParams: GetImoveisParams = {}
+): UseImoveisReturn => {
   const { user } = useAuth();
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
-  const [pagination, setPagination] = useState<PaginationData | null>(null);
+  const [pagination, setPagination] = useState<
+    ImoveisResponse["pagination"] | null
+  >(null);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [params, setParams] = useState<GetImoveisParams>({
+    page: 1,
+    limit: 10,
+    ...initialParams,
+  });
 
-  const fetchImoveis = useCallback(
-    async (page: number) => {
-      if (!user) {
-        setLoading(false);
-        return;
-      }
-      setLoading(true);
-      try {
-        const response = await getImoveis({ page, limit: 5 });
-        setImoveis(response.data || []);
-        setPagination(response.pagination);
-      } catch (err) {
-        console.error("Erro ao buscar imóveis:", err);
-        setError("Não foi possível carregar a lista de imóveis.");
-        setImoveis([]);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [user]
-  );
+  const fetchImoveis = useCallback(async () => {
+    setLoading(true);
+    try {
+      const response = await getImoveis(params);
+      setImoveis(response.data);
+      setPagination(response.pagination);
+      setError(null);
+    } catch (err) {
+      setError("Falha ao carregar os imóveis.");
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  }, [params]);
 
   useEffect(() => {
-    fetchImoveis(currentPage);
-  }, [user, currentPage, fetchImoveis]);
+    fetchImoveis();
+  }, [fetchImoveis]);
 
   const addImovel = async (imovelData: CreateImovelDto) => {
     try {
       await createImovel(imovelData);
-      fetchImoveis(currentPage === 1 ? 1 : 1);
-      if (currentPage !== 1) setCurrentPage(1);
+
+      fetchImoveis();
     } catch (err) {
       console.error("Erro ao adicionar imóvel:", err);
       throw err;
@@ -74,10 +79,9 @@ export const useImoveis = (): UseImoveisReturn => {
 
   const editImovel = async (id: number, imovelData: UpdateImovelDto) => {
     try {
-      const atualizado = await updateImovel(id, imovelData);
-      setImoveis((atuais) =>
-        atuais.map((i) => (i.imovel_id === id ? atualizado : i))
-      );
+      await updateImovel(id, imovelData);
+
+      fetchImoveis();
     } catch (err) {
       console.error("Erro ao editar imóvel:", err);
       throw err;
@@ -87,7 +91,8 @@ export const useImoveis = (): UseImoveisReturn => {
   const removeImovel = async (id: number) => {
     try {
       await deleteImovel(id);
-      fetchImoveis(currentPage);
+
+      fetchImoveis();
     } catch (err) {
       console.error("Erro ao remover imóvel:", err);
       throw err;
@@ -102,6 +107,7 @@ export const useImoveis = (): UseImoveisReturn => {
     addImovel,
     editImovel,
     removeImovel,
-    handlePageChange: setCurrentPage,
+    setPagination,
+    setParams,
   };
 };
