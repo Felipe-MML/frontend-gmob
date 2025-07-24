@@ -11,7 +11,6 @@
 <p align="center">
   <a href="#-funcionalidades-principais">Funcionalidades</a> •
   <a href="#-tecnologias-utilizadas">Tecnologias</a> •
-  <a href="#-estrutura-do-projeto">Estrutura</a> •
   <a href="#-começando">Começando</a>
 </p>
 
