@@ -48,6 +48,10 @@ const RealizarTransacaoModal = ({
         .then((response) => {
           const clientesAtivos = response.clientes.filter((c) => !c.arquivado);
           setClientes(clientesAtivos);
+
+          if (clientesAtivos.length > 0) {
+            setSelectedClienteId(clientesAtivos[0].cliente_id);
+          }
         })
         .catch(() => setError("Erro ao carregar a lista de clientes."));
     }

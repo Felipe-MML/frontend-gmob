@@ -40,7 +40,11 @@ const DashboardPageContent = () => {
   return (
     <div className="w-full space-y-8">
       <div>
-        <PageTitle title={`BEM VINDO, ${user?.nome_completo.split(" ")[0]}!`} />
+        <PageTitle
+          title={`BEM VINDO, ${user?.nome_completo
+            .split(" ")[0]
+            .toUpperCase()}!`}
+        />
         <p className="text-gray-600">Veja como estão suas métricas hoje:</p>
       </div>
 

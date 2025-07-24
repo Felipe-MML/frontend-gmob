@@ -46,7 +46,7 @@ const MainLayout = ({ children }: MainLayoutProps) => {
       const singularLabel =
         parentLabel === "Corretores " ? parentLabel.slice(0, -2) : parentLabel;
 
-      crumbs.push({ label: `Visualização do ${singularLabel}` });
+      crumbs.push({ label: `Visualização ${singularLabel}` });
     }
 
     return crumbs;

@@ -1,6 +1,9 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useEffect } from "react";
+import { useForm, Controller } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { z } from "zod";
 import {
   Dialog,
   DialogPanel,
@@ -10,6 +13,25 @@ import {
 import { Cliente, UpdateClienteDto } from "@/services/clienteService";
 import { IMaskInput } from "react-imask";
 import { toast } from "react-toastify";
+
+const editClienteSchema = z.object({
+  nome_completo: z.string().min(3, "O nome completo é obrigatório"),
+  email: z
+    .string()
+    .email("Digite um email válido")
+    .min(1, "O email é obrigatório"),
+  telefone: z
+    .string()
+    .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "O formato do telefone é inválido")
+    .min(1, "O telefone é obrigatório"),
+  cpf: z
+    .string()
+    .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "O formato do CPF é inválido")
+    .min(1, "O CPF é obrigatório"),
+  tipo_interesse: z.enum(["compra", "aluguel"]),
+});
+
+type ClienteFormData = z.infer<typeof editClienteSchema>;
 
 interface EditClienteModalProps {
   open: boolean;
@@ -24,44 +46,37 @@ export default function EditClienteModal({
   onSave,
   cliente,
 }: EditClienteModalProps) {
-  const [nome, setNome] = useState("");
-  const [email, setEmail] = useState("");
-  const [telefone, setTelefone] = useState("");
-  const [cpf, setCpf] = useState("");
-  const [tipoInteresse, setTipoInteresse] = useState<"compra" | "aluguel">(
-    "compra"
-  );
-  const [isSaving, setIsSaving] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    control,
+    formState: { errors, isSubmitting },
+    reset,
+  } = useForm<ClienteFormData>({
+    resolver: zodResolver(editClienteSchema),
+  });
 
   useEffect(() => {
     if (cliente) {
-      setNome(cliente.nome);
-      setEmail(cliente.email);
-      setTelefone(cliente.telefone);
-      setCpf(cliente.cpf);
-      setTipoInteresse(cliente.tipo_interesse);
+      reset({
+        nome_completo: cliente.nome,
+        email: cliente.email,
+        telefone: cliente.telefone,
+        cpf: cliente.cpf,
+        tipo_interesse: cliente.tipo_interesse,
+      });
     }
-  }, [cliente]);
+  }, [cliente, reset]);
 
-  const handleSubmit = async (e: FormEvent) => {
-    e.preventDefault();
-    setIsSaving(true);
+  const onSubmit = async (data: ClienteFormData) => {
     if (!cliente) return;
 
     try {
-      await onSave(cliente.cliente_id, {
-        nome_completo: nome,
-        email,
-        telefone,
-        cpf,
-        tipo_interesse: tipoInteresse,
-      });
+      await onSave(cliente.cliente_id, data);
       onClose();
       toast.success("Cliente atualizado com sucesso!");
     } catch (err) {
       toast.error("Erro ao atualizar cliente. Verifique os dados.");
-    } finally {
-      setIsSaving(false);
     }
   };
 
@@ -69,73 +84,110 @@ export default function EditClienteModal({
     <Dialog open={open} onClose={onClose} className="relative z-50">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        className="fixed inset-0 bg-black/30 transition-opacity"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel
-          transition
-          className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all data-closed:scale-95 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
-        >
+        <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
           <DialogTitle className="text-lg font-bold">
             Editar Cliente
           </DialogTitle>
-          <form onSubmit={handleSubmit} className="mt-4 space-y-4">
+
+          <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
+            {/* Nome Completo */}
             <div>
               <label htmlFor="edit-nome-cliente">Nome Completo</label>
               <input
                 id="edit-nome-cliente"
                 type="text"
-                value={nome}
-                onChange={(e) => setNome(e.target.value)}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
+                {...register("nome_completo")}
+                className={`w-full border rounded-md p-2 ${
+                  errors.nome_completo ? "border-red-500" : "border-gray-300"
+                }`}
               />
+              {errors.nome_completo && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.nome_completo.message}
+                </p>
+              )}
             </div>
+
+            {/* Email */}
             <div>
               <label htmlFor="edit-email-cliente">Email</label>
               <input
                 id="edit-email-cliente"
                 type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
+                {...register("email")}
+                className={`w-full border rounded-md p-2 ${
+                  errors.email ? "border-red-500" : "border-gray-300"
+                }`}
               />
+              {errors.email && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.email.message}
+                </p>
+              )}
             </div>
+
+            {/* Telefone */}
             <div>
               <label htmlFor="edit-telefone-cliente">Telefone</label>
-              <IMaskInput
-                mask="(00) 00000-0000"
-                id="edit-telefone-cliente"
-                value={telefone}
-                unmask={false}
-                onAccept={(value) => setTelefone(value)}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
+              <Controller
+                name="telefone"
+                control={control}
+                render={({ field }) => (
+                  <IMaskInput
+                    mask="(00) 00000-0000"
+                    id="edit-telefone-cliente"
+                    value={field.value || ""}
+                    onAccept={field.onChange}
+                    className={`w-full border rounded-md p-2 ${
+                      errors.telefone ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                )}
               />
+              {errors.telefone && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.telefone.message}
+                </p>
+              )}
             </div>
+
+            {/* CPF */}
             <div>
               <label htmlFor="edit-cpf-cliente">CPF</label>
-              <IMaskInput
-                mask="000.000.000-00"
-                id="edit-cpf-cliente"
-                value={cpf}
-                unmask={false}
-                onAccept={(value) => setCpf(value)}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
+              <Controller
+                name="cpf"
+                control={control}
+                render={({ field }) => (
+                  <IMaskInput
+                    mask="000.000.000-00"
+                    id="edit-cpf-cliente"
+                    value={field.value || ""}
+                    onAccept={field.onChange}
+                    className={`w-full border rounded-md p-2 ${
+                      errors.cpf ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                )}
               />
+              {errors.cpf && (
+                <p className="text-sm text-red-500 mt-1">
+                  {errors.cpf.message}
+                </p>
+              )}
             </div>
+
+            {/* Tipo de Interesse */}
             <div>
               <label htmlFor="edit-interesse-cliente">Tipo de Interesse</label>
               <select
                 id="edit-interesse-cliente"
-                value={tipoInteresse}
-                onChange={(e) =>
-                  setTipoInteresse(e.target.value as "compra" | "aluguel")
-                }
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
+                {...register("tipo_interesse")}
+                className={`w-full border rounded-md p-2 ${
+                  errors.tipo_interesse ? "border-red-500" : "border-gray-300"
+                }`}
               >
                 <option value="compra">Compra</option>
                 <option value="aluguel">Aluguel</option>
@@ -152,10 +204,10 @@ export default function EditClienteModal({
               </button>
               <button
                 type="submit"
-                disabled={isSaving}
-                className="rounded-md bg-violet-600 px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
+                disabled={isSubmitting}
+                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
               >
-                {isSaving ? "A guardar..." : "Salvar Alterações"}
+                {isSubmitting ? "A guardar..." : "Salvar Alterações"}
               </button>
             </div>
           </form>
