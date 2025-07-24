@@ -10,6 +10,7 @@ import {
 import { CreateCorretorDto } from "@/services/corretorService";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { IMaskInput } from "react-imask";
+import { toast } from "react-toastify";
 
 interface addCorretorModalProps {
   open: boolean;
@@ -24,14 +25,12 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
   const [senha, setSenha] = useState("");
   const [confirmarSenha, setConfirmarSenha] = useState("");
   const [mostrarSenha, setMostrarSenha] = useState(false);
-  const [error, setError] = useState<string | null>(null);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (senha !== confirmarSenha) {
-      setError("As senhas não correspondem.");
+      toast.error("As senhas não correspondem.");
       return;
     }
     try {
@@ -49,11 +48,11 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
       setCpf("");
       setSenha("");
       setConfirmarSenha("");
-      setError(null);
       setMostrarSenha(false);
       onClose();
+      toast.success("Corretor cadastrado com sucesso!");
     } catch (error) {
-      setError("Erro ao cadastrar corretor. Verifique os dados");
+      toast.error("Erro ao cadastrar corretor. Verifique os dados");
     }
   };
   return (
@@ -166,8 +165,6 @@ const AddCorretorModal = ({ open, onClose, onSave }: addCorretorModalProps) => {
                 </button>
               </div>
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

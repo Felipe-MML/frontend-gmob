@@ -24,6 +24,7 @@ import Pagination from "@/components/Pagination";
 import Link from "next/link";
 import StatusFilter from "@/components/statusFilter";
 import TextFilter from "@/components/textFilter";
+import { toast } from "react-toastify";
 
 interface Imovel {
   imovel_id: number;
@@ -52,9 +53,6 @@ const ImoveisPageContent = () => {
     params,
     setParams,
   } = useImoveis();
-
-  const [dateStart, setDateStart] = useState<string>("");
-  const [dateEnd, setDateEnd] = useState<string>("");
 
   const [isAddModalOpen, setIsAddModalOpen] = useState(false);
   const [isEditModalOpen, setIsEditModalOpen] = useState(false);
@@ -149,19 +147,12 @@ const ImoveisPageContent = () => {
     if (!selectedImovel) return;
     await removeImovel(selectedImovel.imovel_id);
     setIsDeleteModalOpen(false);
+    toast.success("Imóvel apagado com sucesso!");
   };
 
   const handleSaveEdit = async (id: number, data: UpdateImovelDto) => {
     await editImovel(id, data);
     setIsEditModalOpen(false);
-  };
-
-  const handleFilterChange = (datas: {
-    dateStart: string;
-    dateEnd: string;
-  }) => {
-    setDateStart(datas.dateStart);
-    setDateEnd(datas.dateEnd);
   };
 
   if (error) return <div className="text-red-500">{error}</div>;

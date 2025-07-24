@@ -7,6 +7,7 @@ import {
   DialogBackdrop,
 } from "@headlessui/react";
 import { Corretor, UpdateCorretorDto } from "@/services/corretorService";
+import { toast } from "react-toastify";
 
 interface EditCorretorModalProps {
   open: boolean;
@@ -25,7 +26,6 @@ const EditCorretorModal = ({
   const [email, setEmail] = useState("");
   const [telefone, setTelefone] = useState("");
   const [cpf, setCpf] = useState("");
-  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (corretor) {
@@ -38,7 +38,6 @@ const EditCorretorModal = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (!corretor) return;
 
@@ -49,8 +48,9 @@ const EditCorretorModal = ({
         telefone,
         cpf,
       });
+      toast.success("Corretor atualizado com sucesso!");
     } catch (err) {
-      setError("Erro ao atualizar corretor. Verifique os dados");
+      toast.error("Erro ao atualizar corretor. Verifique os dados");
     }
   };
   return (
@@ -109,8 +109,6 @@ const EditCorretorModal = ({
                 className="w-full border border-gray-300 rounded-md p-2"
               />
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

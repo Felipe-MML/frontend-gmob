@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import { CreateClienteDto } from "@/services/clienteService";
 import { IMaskInput } from "react-imask";
+import { toast } from "react-toastify";
 
 interface AddClienteModalProps {
   open: boolean;
@@ -28,7 +29,6 @@ export default function AddClienteModal({
   const [tipoInteresse, setTipoInteresse] = useState<"compra" | "aluguel">(
     "compra"
   );
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   const handleClose = () => {
@@ -37,14 +37,12 @@ export default function AddClienteModal({
     setTelefone("");
     setCpf("");
     setTipoInteresse("compra");
-    setError(null);
     setIsSaving(false);
     onClose();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsSaving(true);
 
     try {
@@ -56,8 +54,9 @@ export default function AddClienteModal({
         tipo_interesse: tipoInteresse,
       });
       handleClose();
+      toast.success("Cliente cadastrado com sucesso!");
     } catch (err) {
-      setError(
+      toast.error(
         "Erro ao cadastrar cliente. Verifique os dados e tente novamente."
       );
     } finally {
@@ -145,8 +144,6 @@ export default function AddClienteModal({
                 <option value="aluguel">Aluguel</option>
               </select>
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

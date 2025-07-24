@@ -9,6 +9,7 @@ import {
 } from "@headlessui/react";
 import { Cliente, UpdateClienteDto } from "@/services/clienteService";
 import { IMaskInput } from "react-imask";
+import { toast } from "react-toastify";
 
 interface EditClienteModalProps {
   open: boolean;
@@ -30,7 +31,6 @@ export default function EditClienteModal({
   const [tipoInteresse, setTipoInteresse] = useState<"compra" | "aluguel">(
     "compra"
   );
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -45,7 +45,6 @@ export default function EditClienteModal({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     setIsSaving(true);
     if (!cliente) return;
 
@@ -58,8 +57,9 @@ export default function EditClienteModal({
         tipo_interesse: tipoInteresse,
       });
       onClose();
+      toast.success("Cliente atualizado com sucesso!");
     } catch (err) {
-      setError("Erro ao atualizar cliente. Verifique os dados.");
+      toast.error("Erro ao atualizar cliente. Verifique os dados.");
     } finally {
       setIsSaving(false);
     }
@@ -141,8 +141,6 @@ export default function EditClienteModal({
                 <option value="aluguel">Aluguel</option>
               </select>
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

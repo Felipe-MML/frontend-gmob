@@ -15,6 +15,7 @@ import AddClienteModal from "@/components/addClienteModal";
 import Filters from "@/components/filters";
 import InterestFilter from "@/components/interestFilter";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 const ClientesPageContent = () => {
   const {
@@ -64,8 +65,10 @@ const ClientesPageContent = () => {
       await removeCliente(clienteSelecionado.cliente_id);
       setIsDeleteModalOpen(false);
       setClienteSelecionado(null);
+      toast.success("Cliente arquivado com sucesso!");
     } catch (err) {
-      alert("Erro ao apagar o cliente.");
+      console.error("Erro ao apagar o cliente:", err);
+      toast.error("Erro ao arquivar o cliente.");
     }
   };
 

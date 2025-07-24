@@ -10,6 +10,7 @@ import { Visita } from "@/services/visitaService";
 import { FaTrash, FaEye } from "react-icons/fa";
 import Link from "next/link";
 import DeleteModal from "@/components/deleteModal";
+import { toast } from "react-toastify";
 
 const VisitasPageContent = () => {
   const {
@@ -34,7 +35,10 @@ const VisitasPageContent = () => {
     try {
       await removeVisita(selectedVisita.agendamento_id);
       setIsDeleteModalOpen(false);
-    } catch (err) {}
+      toast.success("Visita apagada com sucesso!");
+    } catch (err) {
+      toast.error("Erro ao apagar visita.");
+    }
   };
 
   const columns: ColumDef<Visita>[] = [

@@ -23,7 +23,6 @@ const ProfileContent = () => {
       setIsEditModalOpen(false);
     } catch (error) {
       console.error("Falha ao atualizar perfil: ", error);
-      alert("Não foi possível atualizar o perfil. Tente novamente.");
       throw error;
     }
   };

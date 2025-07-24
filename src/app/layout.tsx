@@ -4,6 +4,9 @@ import "./globals.css";
 import { Providers } from "./providers";
 import MainLayout from "@/components/mainLayout";
 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+
 const publicSans = Public_Sans({
   variable: "--font-public-sans",
   subsets: ["latin"],
@@ -31,6 +34,19 @@ export default function RootLayout({
         <Providers>
           <MainLayout>{children}</MainLayout>
         </Providers>
+
+        <ToastContainer
+          position="top-right"
+          autoClose={5000} // Fecha automaticamente após 5 segundos
+          hideProgressBar={false}
+          newestOnTop={false}
+          closeOnClick
+          rtl={false}
+          pauseOnFocusLoss
+          draggable
+          pauseOnHover
+          theme="light"
+        />
       </body>
     </html>
   );
