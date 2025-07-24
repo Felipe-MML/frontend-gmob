@@ -39,16 +39,17 @@ interface CorretoresResponse {
   };
 }
 
+interface CorretorFilters {
+  page?: number;
+  limit?: number;
+}
+
 export const getCorretores = async (
-  page = 1,
-  limit = 5
+  filters: CorretorFilters = {}
 ): Promise<CorretoresResponse> => {
   try {
     const { data } = await api.get<CorretoresResponse>("/corretor", {
-      params: {
-        page,
-        limit,
-      },
+      params: filters,
     });
     return data;
   } catch (error) {

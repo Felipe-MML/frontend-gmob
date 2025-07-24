@@ -3,6 +3,8 @@
 import { useState } from "react";
 import { usePathname } from "next/navigation";
 import { FaUsers, FaHome, FaCalendarCheck, FaUserTie } from "react-icons/fa";
+import { MdDashboard } from "react-icons/md";
+
 import Link from "next/link";
 import { useAuth } from "@/context/AuthContext";
 
@@ -18,6 +20,7 @@ interface SidebarItemProps extends MenuItem {
 }
 
 const menuItems: MenuItem[] = [
+  { href: "/", label: "Home", icon: <MdDashboard /> },
   { href: "/corretores", label: "Corretores", icon: <FaUserTie /> },
   { href: "/clientes", label: "Clientes", icon: <FaUsers /> },
   { href: "/imoveis", label: "Imóveis", icon: <FaHome /> },
@@ -28,8 +31,6 @@ export default function Sidebar() {
   const [hovered, setHovered] = useState(false);
   const pathname = usePathname();
   const { user } = useAuth();
-
-  // Filtra os menus com base no perfil
   const filteredMenuItems = menuItems.filter((item) => {
     if (item.label === "Corretores") {
       return user?.perfil === "administrador";
@@ -45,7 +46,6 @@ export default function Sidebar() {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      {/* Logo */}
       <div className="flex items-center justify-center py-4 border-b border-[#c1bef7] h-16">
         <img
           src={hovered ? "/logo.png" : "/logo_sm.png"}
@@ -54,9 +54,12 @@ export default function Sidebar() {
         />
       </div>
 
-      {/* Menu */}
       <nav className="mt-4 ms-2 flex flex-col gap-1">
-        <SidebarMenu items={filteredMenuItems} show={hovered} activePath={pathname} />
+        <SidebarMenu
+          items={filteredMenuItems}
+          show={hovered}
+          activePath={pathname}
+        />
       </nav>
     </aside>
   );
@@ -73,16 +76,23 @@ function SidebarMenu({
 }) {
   return (
     <>
-      {items.map((item) => (
-        <SidebarItem
-          key={item.href}
-          href={item.href}
-          label={item.label}
-          icon={item.icon}
-          show={show}
-          active={activePath?.startsWith(item.href)}
-        />
-      ))}
+      {items.map((item) => {
+        const isActive =
+          item.href === "/"
+            ? activePath === "/"
+            : activePath?.startsWith(item.href);
+
+        return (
+          <SidebarItem
+            key={item.href}
+            href={item.href}
+            label={item.label}
+            icon={item.icon}
+            show={show}
+            active={isActive}
+          />
+        );
+      })}
     </>
   );
 }
