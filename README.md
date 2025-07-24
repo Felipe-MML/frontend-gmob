@@ -107,5 +107,3 @@ Para executar este projeto localmente, siga os passos abaixo:
     ```
 
 5.  Abra [http://localhost:3000](http://localhost:3000) em seu navegador para ver a aplicação.
-
----
