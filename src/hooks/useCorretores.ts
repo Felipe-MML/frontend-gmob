@@ -1,4 +1,6 @@
-import { useState, useEffect, useMemo } from "react";
+"use client";
+
+import { useState, useEffect, useCallback } from "react";
 import {
   getCorretores,
   deleteCorretor,
@@ -36,18 +38,18 @@ export const useCorretores = (): UseCorretoresReturn => {
   const [currentPage, setCurrentPage] = useState(1);
   const [pagination, setPagination] = useState<PaginationData | null>(null);
 
-  useEffect(() => {
-    if (user?.perfil !== "administrador") {
-      setError(
-        "Acesso negado. Você não tem permissão para esta funcionalidade."
-      );
-      setLoading(false);
-      return;
-    }
-
-    const fetchCorretores = async () => {
+  const fetchCorretores = useCallback(
+    async (pageToFetch: number) => {
+      if (user?.perfil !== "administrador") {
+        setError(
+          "Acesso negado. Você não tem permissão para esta funcionalidade."
+        );
+        setLoading(false);
+        return;
+      }
+      setLoading(true);
       try {
-        const response = await getCorretores(currentPage);
+        const response = await getCorretores({ page: pageToFetch, limit: 5 });
         setCorretores(response.corretores);
         setPagination(response.pagination);
       } catch (err) {
@@ -55,15 +57,23 @@ export const useCorretores = (): UseCorretoresReturn => {
       } finally {
         setLoading(false);
       }
-    };
+    },
+    [user]
+  );
 
-    fetchCorretores();
-  }, [user, currentPage]);
+  useEffect(() => {
+    fetchCorretores(currentPage);
+  }, [user, currentPage, fetchCorretores]);
 
   const addCorretor = async (corretorData: CreateCorretorDto) => {
     try {
-      const novoCorretor = await createCorretor(corretorData);
-      setCorretores((atuais) => [novoCorretor, ...atuais]);
+      await createCorretor(corretorData);
+
+      if (currentPage !== 1) {
+        setCurrentPage(1);
+      } else {
+        fetchCorretores(1);
+      }
     } catch (err) {
       console.error("Erro ao adicionar corretor:", err);
       throw err;
@@ -85,7 +95,11 @@ export const useCorretores = (): UseCorretoresReturn => {
   const removeCorretor = async (id: number) => {
     try {
       await deleteCorretor(id);
-      setCorretores((atuais) => atuais.filter((c) => c.corretor_id !== id));
+      if (corretores.length === 1 && currentPage > 1) {
+        setCurrentPage(currentPage - 1);
+      } else {
+        fetchCorretores(currentPage);
+      }
     } catch (err) {
       console.error("Erro ao remover corretor:", err);
       throw err;

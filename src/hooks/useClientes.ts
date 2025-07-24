@@ -44,6 +44,12 @@ export const useClientes = () => {
         });
         setClientes(response.clientes || []);
         setPagination(response.pagination);
+        if (
+          pageToFetch > response.pagination.totalPages &&
+          response.pagination.totalPages > 0
+        ) {
+          setCurrentPage(response.pagination.totalPages);
+        }
       } catch (err) {
         setError("Não foi possível carregar a lista de clientes.");
         setClientes([]);
@@ -78,7 +84,11 @@ export const useClientes = () => {
   const archiveClienteHook = async (id: number) => {
     await archiveClient(id);
 
-    fetchClientes(currentPage);
+    if (clientes.length === 1 && currentPage > 1) {
+      setCurrentPage(currentPage - 1);
+    } else {
+      fetchClientes(currentPage);
+    }
   };
 
   return {

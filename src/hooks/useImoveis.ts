@@ -19,21 +19,7 @@ interface PaginationData {
   totalPages: number;
 }
 
-interface UseImoveisReturn {
-  data: Imovel[];
-  pagination: PaginationData | null;
-  loading: boolean;
-  error: string | null;
-  addImovel: (data: CreateImovelDto) => Promise<void>;
-  editImovel: (id: number, data: UpdateImovelDto) => Promise<void>;
-  removeImovel: (id: number) => Promise<void>;
-  setPagination: React.Dispatch<React.SetStateAction<PaginationData | null>>;
-  setParams: React.Dispatch<React.SetStateAction<GetImoveisParams>>;
-}
-
-export const useImoveis = (
-  initialParams: GetImoveisParams = {}
-): UseImoveisReturn => {
+export const useImoveis = (initialParams: GetImoveisParams = {}) => {
   const { user } = useAuth();
   const [imoveis, setImoveis] = useState<Imovel[]>([]);
   const [pagination, setPagination] = useState<
@@ -43,11 +29,15 @@ export const useImoveis = (
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<GetImoveisParams>({
     page: 1,
-    limit: 10,
+    limit: 10, // O seu backend parece usar 10 como padrão
     ...initialParams,
   });
 
   const fetchImoveis = useCallback(async () => {
+    if (!user) {
+      setLoading(false);
+      return;
+    }
     setLoading(true);
     try {
       const response = await getImoveis(params);
@@ -60,7 +50,7 @@ export const useImoveis = (
     } finally {
       setLoading(false);
     }
-  }, [params]);
+  }, [params, user]);
 
   useEffect(() => {
     fetchImoveis();
@@ -70,7 +60,7 @@ export const useImoveis = (
     try {
       await createImovel(imovelData);
 
-      fetchImoveis();
+      setParams((p) => ({ ...p, page: 1 }));
     } catch (err) {
       console.error("Erro ao adicionar imóvel:", err);
       throw err;
@@ -92,7 +82,14 @@ export const useImoveis = (
     try {
       await deleteImovel(id);
 
-      fetchImoveis();
+      if (imoveis.length === 1 && params.page && params.page > 1) {
+        setParams((prevParams) => ({
+          ...prevParams,
+          page: prevParams.page! - 1,
+        }));
+      } else {
+        fetchImoveis();
+      }
     } catch (err) {
       console.error("Erro ao remover imóvel:", err);
       throw err;
@@ -107,7 +104,6 @@ export const useImoveis = (
     addImovel,
     editImovel,
     removeImovel,
-    setPagination,
     setParams,
   };
 };
