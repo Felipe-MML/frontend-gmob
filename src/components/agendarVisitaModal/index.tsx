@@ -11,6 +11,7 @@ import { useAuth } from "@/context/AuthContext";
 import { Imovel } from "@/services/imovelService";
 import { Cliente, getClientes } from "@/services/clienteService";
 import { createVisita, CreateVisitaDto } from "@/services/visitaService";
+import { toast } from "react-toastify";
 
 interface AgendarVisitaModalProps {
   open: boolean;
@@ -32,7 +33,6 @@ const AgendarVisitaModal = ({
   const [horaInicio, setHoraInicio] = useState("14:00");
   const [horaTermino, setHoraTermino] = useState("15:00");
   const [observacoes, setObservacoes] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -42,12 +42,11 @@ const AgendarVisitaModal = ({
           const clientesAtivos = response.clientes.filter((c) => !c.arquivado);
           setClientes(clientesAtivos);
         })
-        .catch(() => setError("Erro ao carregar a lista de clientes."));
+        .catch(() => toast.error("Erro ao carregar a lista de clientes."));
     }
   }, [open]);
 
   const handleClose = () => {
-    setError(null);
     setIsSaving(false);
     setSelectedClienteId("");
     setHoraTermino("15:00");
@@ -56,7 +55,6 @@ const AgendarVisitaModal = ({
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (
       !imovel ||
@@ -66,7 +64,7 @@ const AgendarVisitaModal = ({
       !horaInicio ||
       !horaTermino
     ) {
-      setError("Por favor, preencha todos os campos.");
+      toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
 
@@ -85,10 +83,10 @@ const AgendarVisitaModal = ({
 
     try {
       await createVisita(visitaData);
-
+      toast.success("Visita agendada com sucesso!");
       handleClose();
     } catch (err) {
-      setError("Falha ao agendar a visita. Verifique os dados.");
+      toast.error("Falha ao agendar a visita. Verifique os dados.");
       console.error(err);
     } finally {
       setIsSaving(false);
@@ -191,8 +189,6 @@ const AgendarVisitaModal = ({
                 placeholder="Detalhes sobre a visita..."
               />
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

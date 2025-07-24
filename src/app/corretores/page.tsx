@@ -21,6 +21,7 @@ import AddCorretorModal from "@/components/addCorretorModal";
 import EditCorretorModal from "@/components/editCorretorModal";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import { toast } from "react-toastify";
 
 interface Corretor {
   corretor_id: number;
@@ -137,6 +138,7 @@ const CorretoresPageContent = () => {
     if (!selectedCorretor) return;
     await removeCorretor(selectedCorretor.corretor_id);
     setIsDeleteModalOpen(false);
+    toast.success("Corretor apagado com sucesso!");
   };
 
   const handleSaveEdit = async (id: number, data: UpdateCorretorDto) => {

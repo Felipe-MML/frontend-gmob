@@ -13,6 +13,8 @@ import {
   getTiposImoveis,
 } from "@/services/imovelService";
 
+import { toast } from "react-toastify";
+
 interface AddImovelModalProps {
   open: boolean;
   onClose: () => void;
@@ -29,21 +31,20 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
   const [numero, setNumero] = useState("");
   const [valor, setValor] = useState("");
   const [area, setArea] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [numeroComodos, setNumeroComodos] = useState("");
   const [descricao, setDescricao] = useState("");
+  const [complemento, setComplemento] = useState("");
 
   useEffect(() => {
     if (open) {
       getTiposImoveis()
         .then(setTiposImoveis)
-        .catch(() => setError("Erro ao carregar tipos de imóvel"));
+        .catch(() => toast.error("Erro ao carregar tipos de imóvel"));
     }
   }, [open]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
 
     if (
       tipoImovelId === "" ||
@@ -55,7 +56,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       !valor ||
       !area
     ) {
-      setError("Por favor, preencha todos os campos.");
+      toast.error("Por favor, preencha todos os campos.");
       return;
     }
 
@@ -71,6 +72,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         valor: parseFloat(valor),
         area: parseFloat(area),
         descricao: descricao,
+        complemento: complemento,
       });
 
       // Reset campos
@@ -84,8 +86,9 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       setArea("");
       setDescricao("");
       onClose();
+      toast.success("Imóvel cadastrado com sucesso!");
     } catch {
-      setError("Erro ao cadastrar imóvel. Verifique os dados.");
+      toast.error("Erro ao cadastrar imóvel. Verifique os dados.");
     }
   };
 
@@ -224,6 +227,21 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
               />
             </div>
 
+            {/* Complemento */}
+            <div>
+              <label htmlFor="complemento" className="block mb-1 font-medium">
+                Complemento (Opcional)
+              </label>
+              <input
+                id="complemento"
+                type="text"
+                value={complemento}
+                onChange={(e) => setComplemento(e.target.value)}
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Detalhes adicionais..."
+              />
+            </div>
+
             {/* Valor */}
             <div>
               <label htmlFor="valor" className="block mb-1 font-medium">
@@ -271,8 +289,6 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                 placeholder="Detalhes sobre o imóvel..."
               />
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button

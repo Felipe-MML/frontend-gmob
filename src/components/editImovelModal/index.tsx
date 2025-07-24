@@ -12,6 +12,7 @@ import {
   TipoImovel,
   getTiposImoveis,
 } from "@/services/imovelService";
+import { toast } from "react-toastify";
 
 interface EditImovelModalProps {
   open: boolean;
@@ -38,7 +39,6 @@ const EditImovelModal = ({
   const [area, setArea] = useState("");
   const [numeroComodos, setNumeroComodos] = useState("");
   const [descricao, setDescricao] = useState("");
-  const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
@@ -61,13 +61,12 @@ const EditImovelModal = ({
     if (open) {
       getTiposImoveis()
         .then(setTiposImoveis)
-        .catch(() => setError("Erro ao carregar tipos de imóvel"));
+        .catch(() => toast.error("Erro ao carregar tipos de imóvel"));
     }
   }, [open]);
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
-    setError(null);
     if (!imovel) return;
 
     setIsSaving(true);
@@ -88,8 +87,9 @@ const EditImovelModal = ({
 
       await onSave(imovel.imovel_id, imovelData);
       onClose();
+      toast.success("Imóvel atualizado com sucesso!");
     } catch (err) {
-      setError("Erro ao atualizar imóvel. Verifique os dados.");
+      toast.error("Erro ao atualizar imóvel. Verifique os dados.");
     } finally {
       setIsSaving(false);
     }
@@ -269,8 +269,6 @@ const EditImovelModal = ({
                 className="w-full rounded-md border border-gray-300 p-2"
               />
             </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
 
             <div className="mt-6 flex justify-end space-x-2">
               <button
