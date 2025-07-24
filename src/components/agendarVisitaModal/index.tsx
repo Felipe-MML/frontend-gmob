@@ -41,6 +41,9 @@ const AgendarVisitaModal = ({
         .then((response) => {
           const clientesAtivos = response.clientes.filter((c) => !c.arquivado);
           setClientes(clientesAtivos);
+          if (clientesAtivos.length > 0) {
+            setSelectedClienteId(clientesAtivos[0].cliente_id);
+          }
         })
         .catch(() => toast.error("Erro ao carregar a lista de clientes."));
     }
