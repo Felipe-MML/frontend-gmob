@@ -42,14 +42,22 @@ interface CorretoresResponse {
 interface CorretorFilters {
   page?: number;
   limit?: number;
+  datainicio?: string;
+  datafim?: string;
 }
 
 export const getCorretores = async (
   filters: CorretorFilters = {}
 ): Promise<CorretoresResponse> => {
   try {
+    const params = Object.fromEntries(
+      Object.entries(filters).filter(
+        ([, value]) => value !== "" && value != null
+      )
+    );
+
     const { data } = await api.get<CorretoresResponse>("/corretor", {
-      params: filters,
+      params,
     });
     return data;
   } catch (error) {

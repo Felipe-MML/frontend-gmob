@@ -23,6 +23,15 @@ const DashboardPageContent = () => {
     ];
   }, [metricas]);
 
+  const totalImoveis = useMemo(() => {
+    if (!metricas) return 0;
+    return (
+      metricas.imoveisDisponiveis +
+      metricas.imoveisAlugados +
+      metricas.imoveisVendidos
+    );
+  }, [metricas]);
+
   if (loading) return <div>A carregar métricas...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
@@ -38,21 +47,25 @@ const DashboardPageContent = () => {
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-gray-500">Total de Imóveis</h3>
-          <p className="text-3xl font-bold text-gray-800">
-            {metricas.imoveisCadastrados}
-          </p>
+          <p className="text-3xl font-bold text-gray-800">{totalImoveis}</p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-gray-500">Total de Clientes</h3>
-          <p className="text-3xl font-bold text-gray-800">{2}</p>
+          <p className="text-3xl font-bold text-gray-800">
+            {metricas.totalClientes}
+          </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-gray-500">Total de Transações</h3>
-          <p className="text-3xl font-bold text-gray-800">{5}</p>
+          <p className="text-3xl font-bold text-gray-800">
+            {metricas.totalTransacoes}
+          </p>
         </div>
         <div className="bg-white p-6 rounded-lg shadow-md">
           <h3 className="text-gray-500">VGV (Valor Geral de Vendas)</h3>
-          <p className="text-3xl font-bold text-gray-800">R$ {3}</p>
+          <p className="text-3xl font-bold text-gray-800">
+            R$ {metricas.totalVendas.toLocaleString("pt-BR")}
+          </p>
         </div>
       </div>
 

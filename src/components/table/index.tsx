@@ -13,8 +13,8 @@ export interface TableProps<T> {
 
 const Table = <T extends {}>({ data, columns }: TableProps<T>) => {
   return (
-    <div className="overflow-x-auto rounded-lg border border-gray-200">
-      <table className="min-w-full divide-y-2 divide-gray-200 bg-white text-sm">
+    <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
+      <table className="min-w-full divide-y-2 divide-gray-200 text-sm">
         <thead className="text-left">
           <tr>
             {columns.map((column) => (
@@ -35,7 +35,6 @@ const Table = <T extends {}>({ data, columns }: TableProps<T>) => {
                   key={`${rowIndex}-${String(column.accessorKey)}`}
                   className="whitespace-nowrap px-4 py-3 text-gray-700"
                 >
-                  {/* Se a coluna tiver uma função `cell`, use-a. Senão, mostre o dado simples. */}
                   {column.cell
                     ? column.cell(row)
                     : String(row[column.accessorKey])}

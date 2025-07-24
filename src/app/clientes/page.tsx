@@ -13,7 +13,6 @@ import { FaPencilAlt, FaArchive, FaEye } from "react-icons/fa";
 import { Cliente, UpdateClienteDto } from "@/services/clienteService";
 import AddClienteModal from "@/components/addClienteModal";
 import Filters from "@/components/filters";
-import DataRangeFilter from "@/components/dataRangeFilter";
 import InterestFilter from "@/components/interestFilter";
 import Link from "next/link";
 
@@ -52,7 +51,6 @@ const ClientesPageContent = () => {
     try {
       await editCliente(id, data);
     } catch (err) {
-      alert("Erro ao editar o cliente.");
       throw err;
     } finally {
       setIsEditModalOpen(false);
@@ -109,7 +107,6 @@ const ClientesPageContent = () => {
     },
   ];
 
-  if (loading) return <div>Carregando clientes...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
@@ -128,14 +125,6 @@ const ClientesPageContent = () => {
         <div className="mb-6">
           <Filters title="Filtros">
             <div className="flex flex-col md:flex-row gap-4">
-              <DataRangeFilter
-                dateStart={filters.dataInicio}
-                dateEnd={filters.dataFim}
-                onFilterChange={({ dateStart, dateEnd }) => {
-                  setFilters.setDataInicio(dateStart);
-                  setFilters.setDataFim(dateEnd);
-                }}
-              />
               <InterestFilter
                 value={filters.tipoInteresse}
                 onChange={setFilters.setTipoInteresse}
@@ -143,10 +132,15 @@ const ClientesPageContent = () => {
             </div>
           </Filters>
         </div>
-
-        <div className="w-full mt-5">
-          <Table data={clientes} columns={columns} />
-        </div>
+        {!loading ? (
+          <div className="w-full mt-5">
+            <Table data={clientes} columns={columns} />
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p>Carregando clientes...</p>
+          </div>
+        )}
 
         {pagination && (
           <Pagination

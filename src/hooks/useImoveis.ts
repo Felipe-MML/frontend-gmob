@@ -29,7 +29,10 @@ export const useImoveis = (initialParams: GetImoveisParams = {}) => {
   const [error, setError] = useState<string | null>(null);
   const [params, setParams] = useState<GetImoveisParams>({
     page: 1,
-    limit: 10, // O seu backend parece usar 10 como padrão
+    limit: 5,
+    status: "",
+    cidade: "",
+    estado: "",
     ...initialParams,
   });
 
@@ -40,7 +43,12 @@ export const useImoveis = (initialParams: GetImoveisParams = {}) => {
     }
     setLoading(true);
     try {
-      const response = await getImoveis(params);
+      const cleanParams = Object.fromEntries(
+        Object.entries(params).filter(
+          ([, value]) => value !== "" && value != null
+        )
+      );
+      const response = await getImoveis(cleanParams);
       setImoveis(response.data);
       setPagination(response.pagination);
       setError(null);
@@ -60,7 +68,7 @@ export const useImoveis = (initialParams: GetImoveisParams = {}) => {
     try {
       await createImovel(imovelData);
 
-      setParams((p) => ({ ...p, page: 1 }));
+      setParams({ page: 1, limit: 5 });
     } catch (err) {
       console.error("Erro ao adicionar imóvel:", err);
       throw err;
@@ -104,6 +112,7 @@ export const useImoveis = (initialParams: GetImoveisParams = {}) => {
     addImovel,
     editImovel,
     removeImovel,
+    params,
     setParams,
   };
 };

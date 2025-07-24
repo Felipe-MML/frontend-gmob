@@ -11,10 +11,3 @@
   --color-foreground: var(--foreground);
   --color-button: var(--button);
 }
-
-@media (prefers-color-scheme: dark) {
-  
-  }
-
-body {
-}
