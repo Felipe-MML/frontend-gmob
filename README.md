@@ -1,36 +1,71 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# GMOB - Sistema de Gestão Imobiliária
 
-## Getting Started
+<p align="center">
+  <img src="src/app/favicon.ico" alt="GMOB Logo" width="120"/>
+</p>
 
-First, run the development server:
+<p align="center">
+  <strong>O GMOB é uma plataforma completa e moderna para a gestão de imobiliárias, desenvolvida com as tecnologias mais recentes para garantir uma experiência de usuário fluida, responsiva e eficiente.</strong>
+</p>
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
-```
+<p align="center">
+  <a href="#-funcionalidades-principais">Funcionalidades</a> •
+  <a href="#-tecnologias-utilizadas">Tecnologias</a> •
+  <a href="#-estrutura-do-projeto">Estrutura</a> •
+  <a href="#-começando">Começando</a>
+</p>
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## ✨ Funcionalidades Principais
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+O sistema foi projetado para atender às principais necessidades de corretores e administradores de imobiliárias, centralizando todas as operações em um único lugar.
 
-## Learn More
+* **Dashboard Analítico:**
+    * Visão geral com as principais métricas do negócio: total de imóveis (disponíveis, vendidos, alugados), número de clientes, total de transações e Valor Geral de Vendas (VGV).
+    * Gráfico interativo para visualizar a distribuição de imóveis por status.
 
-To learn more about Next.js, take a look at the following resources:
+* **Gestão de Corretores (Acesso Restrito):**
+    * Funcionalidade exclusiva para administradores, permitindo o cadastro, visualização, edição e exclusão de corretores.
+    * Tabela com paginação e filtros por data de cadastro.
+    * Modais para adição e edição de corretores com validação de formulário e máscaras de entrada para CPF e telefone.
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+* **Gestão de Clientes:**
+    * Cadastro completo de clientes com informações de contato, CPF e tipo de interesse (compra ou aluguel).
+    * Filtros por tipo de interesse para facilitar a busca.
+    * Opção para "arquivar" clientes em vez de excluí-los permanentemente, mantendo o histórico.
+    * Visualização detalhada do perfil de cada cliente, incluindo o corretor responsável/page.tsx].
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+* **Gestão de Imóveis:**
+    * CRUD completo para imóveis, com campos para endereço, valor, área, número de cômodos, status (disponível, vendido, alugado) e descrição.
+    * Filtros avançados por status, estado e cidade.
+    * Página de detalhes para cada imóvel, exibindo todas as informações, corretor responsável e ações contextuais/page.tsx].
 
-## Deploy on Vercel
+* **Transações e Visitas:**
+    * **Agendamento de Visitas:** A partir da página de um imóvel disponível, é possível agendar uma visita, associando um cliente, data e horário/page.tsx, src/components/agendarVisitaModal/index.tsx].
+    * **Realização de Transações:** Permite registrar a venda ou aluguel de um imóvel para um cliente específico diretamente pela página do imóvel/page.tsx, src/components/realizeTransaction/index.tsx].
+    * **Listagem de Visitas:** Uma página dedicada para visualizar todas as visitas agendadas, com detalhes do cliente, corretor e imóvel.
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+* **Autenticação e Perfil de Usuário:**
+    * Sistema de login seguro com token JWT.
+    * Rotas protegidas que garantem que apenas usuários autenticados possam acessar o sistema.
+    * Página de perfil onde o usuário pode visualizar e editar suas próprias informações.
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+## 🚀 Tecnologias Utilizadas
+
+Este projeto foi construído com uma stack moderna, focada em performance, escalabilidade e manutenibilidade.
+
+* **Framework:** [Next.js](https://nextjs.org/) (com App Router)
+* **Linguagem:** [TypeScript](https://www.typescriptlang.org/)
+* **Estilização:** [Tailwind CSS](https://tailwindcss.com/)
+* **Componentes UI:** [Headless UI](https://headlessui.com/) para modais e transições acessíveis.
+* **Gerenciamento de Formulários:** [React Hook Form](https://react-hook-form.com/) com [Zod](https://zod.dev/) para validação de schemas.
+* **Requisições HTTP:** [Axios](https://axios-http.com/) com interceptors para manipulação de token de autenticação.
+* **Gráficos:** [Recharts](https://recharts.org/) para a criação de gráficos bonitos e responsivos.
+* **Ícones:** [React Icons](https://react-icons.github.io/react-icons/)
+* **Notificações (Toasts):** [React Toastify](https://fkhadra.github.io/react-toastify/introduction) para feedback visual ao usuário.
+* **Máscaras de Input:** [React-IMask](https://imask.js.org/) para formatação de campos como CPF e telefone.
+
+## 📂 Estrutura do Projeto
+
+A estrutura de pastas foi organizada para promover a separação de responsabilidades e a escalabilidade.
