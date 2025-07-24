@@ -66,33 +66,6 @@ Este projeto foi construído com uma stack moderna, focada em performance, escal
 * **Notificações (Toasts):** [React Toastify](https://fkhadra.github.io/react-toastify/introduction) para feedback visual ao usuário.
 * **Máscaras de Input:** [React-IMask](https://imask.js.org/) para formatação de campos como CPF e telefone.
 
-## 📂 Estrutura do Projeto
-
-A estrutura de pastas foi organizada para promover a separação de responsabilidades e a escalabilidade.
-
-/src
-|
-├── /app                    # Rotas da aplicação (App Router)
-│   ├── /clientes           # Páginas de gestão de clientes
-│   ├── /corretores         # Páginas de gestão de corretores
-│   ├── /imoveis            # Páginas de gestão de imóveis
-│   ├── /visitas            # Páginas de gestão de visitas
-│   ├── page.tsx            # Página principal (Dashboard)
-│   └── layout.tsx          # Layout principal da aplicação
-|
-├── /components             # Componentes React reutilizáveis
-│   ├── /charts             # Componentes de gráficos
-│   └── /table              # Componente de tabela genérico
-|
-├── /context                # Context API para estado global (ex: AuthContext)
-|
-├── /hooks                  # Hooks customizados para lógica de negócio (ex: useClientes)
-|
-├── /services               # Funções para comunicação com a API backend
-|
-└── /styles                 # Arquivos de estilo global
-
-
 ## 🚀 Começando
 
 Para executar este projeto localmente, siga os passos abaixo:
