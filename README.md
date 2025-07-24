@@ -69,3 +69,63 @@ Este projeto foi construído com uma stack moderna, focada em performance, escal
 ## 📂 Estrutura do Projeto
 
 A estrutura de pastas foi organizada para promover a separação de responsabilidades e a escalabilidade.
+
+/src
+|
+├── /app                    # Rotas da aplicação (App Router)
+│   ├── /clientes           # Páginas de gestão de clientes
+│   ├── /corretores         # Páginas de gestão de corretores
+│   ├── /imoveis            # Páginas de gestão de imóveis
+│   ├── /visitas            # Páginas de gestão de visitas
+│   ├── page.tsx            # Página principal (Dashboard)
+│   └── layout.tsx          # Layout principal da aplicação
+|
+├── /components             # Componentes React reutilizáveis
+│   ├── /charts             # Componentes de gráficos
+│   └── /table              # Componente de tabela genérico
+|
+├── /context                # Context API para estado global (ex: AuthContext)
+|
+├── /hooks                  # Hooks customizados para lógica de negócio (ex: useClientes)
+|
+├── /services               # Funções para comunicação com a API backend
+|
+└── /styles                 # Arquivos de estilo global
+
+
+## 🚀 Começando
+
+Para executar este projeto localmente, siga os passos abaixo:
+
+1.  **Clone o repositório:**
+    ```bash
+    git clone https://URL_DO_SEU_REPOSITORIO.git
+    cd NOME_DO_PROJETO
+    ```
+
+2.  **Instale as dependências:**
+    ```bash
+    npm install
+    # ou
+    yarn install
+    ```
+
+3.  **Configure o ambiente:**
+    * Renomeie o arquivo `.env.example` para `.env.local`.
+    * Adicione a URL da sua API no arquivo `.env.local`:
+        ```
+        NEXT_PUBLIC_API_URL=http://localhost:3000/api
+        ```
+    * *(Nota: O código atual usa uma URL fixa `http://localhost:3000/api` no arquivo `src/services/api.ts`. Recomenda-se mover isso para uma variável de ambiente)*.
+
+4.  **Execute o projeto:**
+    ```bash
+    npm run dev
+    # ou
+    yarn dev
+    ```
+
+5.  Abra [http://localhost:3000](http://localhost:3000) em seu navegador para ver a aplicação.
+
+---
+
