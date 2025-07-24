@@ -14,6 +14,8 @@ const ImovelPageContent = () => {
   const params = useParams();
   const id = params.id as string;
 
+  const [isVisitaModalOpen, setIsVisitaModalOpen] = useState(false);
+
   const [isTransacaoModalOpen, setIsTransacaoModalOpen] = useState(false);
   const [imovel, setImovel] = useState<Imovel | null>(null);
   const [corretor, setCorretor] = useState<Corretor | null>(null);
@@ -129,7 +131,7 @@ const ImovelPageContent = () => {
               </span>
               <p className="text-gray-800">{imovel.complemento || "N/A"}</p>
             </div>
-            {imovel.status === "disponivel" ? (
+            {imovel.status === "disponivel" && (
               <div className="mt-8 gap-3 flex ">
                 <button
                   onClick={() => setIsTransacaoModalOpen(true)}
@@ -137,18 +139,12 @@ const ImovelPageContent = () => {
                 >
                   Realizar Transação
                 </button>
-                <button className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer">
+                <button
+                  onClick={() => setIsVisitaModalOpen(true)}
+                  className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer"
+                >
                   Agendar Visita
                 </button>
-              </div>
-            ) : (
-              <div className="mt-8 gap-3 flex flex-col ">
-                <p className="font-bold">Esse imóvel Já foi {imovel.status}</p>
-                <div className="flex gap-3">
-                  <button className="bg-button p-2 rounded-2xl text-white hover:bg-violet-500 w-40 hover:cursor-pointer">
-                    Ver detalhes
-                  </button>
-                </div>
               </div>
             )}
           </div>
@@ -157,6 +153,11 @@ const ImovelPageContent = () => {
       <RealizeTransaction
         open={isTransacaoModalOpen}
         onClose={() => setIsTransacaoModalOpen(false)}
+        imovel={imovel}
+      />
+      <AgendarVisitaModal
+        open={isVisitaModalOpen}
+        onClose={() => setIsVisitaModalOpen(false)}
         imovel={imovel}
       />
     </div>

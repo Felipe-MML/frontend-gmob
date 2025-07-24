@@ -1,10 +1,12 @@
 import api from "./api";
 
 export interface Metricas {
-  imoveisCadastrados: number;
   imoveisDisponiveis: number;
   imoveisVendidos: number;
   imoveisAlugados: number;
+  totalClientes: number;
+  totalTransacoes: number;
+  totalVendas: number;
 }
 
 export const getMetricas = async (): Promise<Metricas> => {

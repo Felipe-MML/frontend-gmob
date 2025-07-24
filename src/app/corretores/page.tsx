@@ -152,10 +152,6 @@ const CorretoresPageContent = () => {
     setDateEnd(datas.dateEnd);
   };
 
-  if (loading) {
-    return <div>Carregando corretores...</div>;
-  }
-
   if (error) {
     return <div className="text-red-500">{error}</div>;
   }
@@ -178,18 +174,25 @@ const CorretoresPageContent = () => {
             onFilterChange={handleFilterChange}
           />
         </Filters>
-
-        <div className="w-full max-w-6xl mt-5">
-          <Table data={corretoresFilter} columns={columns}></Table>
-        </div>
-
-        {pagination && pagination.totalPages > 1 && (
-          <Pagination
-            currentPage={pagination.page}
-            totalPages={pagination.totalPages}
-            onPageChange={handlePageChange}
-          />
+        {!loading ? (
+          <div className="w-full max-w-6xl mt-5">
+            <Table data={corretoresFilter} columns={columns}></Table>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p>Carregando corretores...</p>
+          </div>
         )}
+
+        {pagination &&
+          pagination.totalPages > 1 &&
+          corretoresFilter.length > 0 && (
+            <Pagination
+              currentPage={pagination.page}
+              totalPages={pagination.totalPages}
+              onPageChange={handlePageChange}
+            />
+          )}
 
         <AddCorretorModal
           open={isAddModalOpen}

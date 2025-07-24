@@ -22,6 +22,8 @@ import AddImovelModal from "@/components/addImovelModal";
 import EditImovelModal from "@/components/editImovelModal";
 import Pagination from "@/components/Pagination";
 import Link from "next/link";
+import StatusFilter from "@/components/statusFilter";
+import TextFilter from "@/components/textFilter";
 
 interface Imovel {
   imovel_id: number;
@@ -47,6 +49,7 @@ const ImoveisPageContent = () => {
     addImovel,
     editImovel,
     removeImovel,
+    params,
     setParams,
   } = useImoveis();
 
@@ -58,20 +61,25 @@ const ImoveisPageContent = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedImovel, setSelectedImovel] = useState<Imovel | null>(null);
 
+  const [statusFilter, setStatusFilter] = useState("");
+  const [estadoFilter, setEstadoFilter] = useState("");
+  const [cidadeFilter, setCidadeFilter] = useState("");
+
   useEffect(() => {
     const handler = setTimeout(() => {
       setParams((prevParams) => ({
         ...prevParams,
         page: 1,
-        datainicio: dateStart || undefined,
-        datafim: dateEnd || undefined,
+        status: statusFilter || undefined,
+        estado: estadoFilter || undefined,
+        cidade: cidadeFilter || undefined,
       }));
-    }, 500);
+    }, 700);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [dateStart, dateEnd, setParams]);
+  }, [statusFilter, estadoFilter, cidadeFilter, setParams]);
 
   const columns: ColumDef<Imovel>[] = [
     { accessorKey: "status", header: "Status" },
@@ -156,7 +164,6 @@ const ImoveisPageContent = () => {
     setDateEnd(datas.dateEnd);
   };
 
-  if (loading) return <div>Carregando imóveis...</div>;
   if (error) return <div className="text-red-500">{error}</div>;
 
   return (
@@ -171,17 +178,31 @@ const ImoveisPageContent = () => {
         </div>
 
         <Filters title="Filtros">
-          <DataRangeFilter
-            dateStart={dateStart}
-            dateEnd={dateEnd}
-            onFilterChange={handleFilterChange}
-          />
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <StatusFilter value={statusFilter} onChange={setStatusFilter} />
+            <TextFilter
+              label="Estado"
+              placeholder="Ex: Alagoas"
+              value={estadoFilter}
+              onChange={setEstadoFilter}
+            />
+            <TextFilter
+              label="Cidade"
+              placeholder="Ex: Maceió"
+              value={cidadeFilter}
+              onChange={setCidadeFilter}
+            />
+          </div>
         </Filters>
-
-        <div className="w-full max-w-6xl mt-5">
-          <Table data={imoveis ?? []} columns={columns} />
-        </div>
-
+        {!loading ? (
+          <div className="w-full max-w-6xl mt-5">
+            <Table data={imoveis ?? []} columns={columns} />
+          </div>
+        ) : (
+          <div className="flex justify-center items-center h-64">
+            <p>Carregando imóveis...</p>
+          </div>
+        )}
         {pagination && pagination.totalPages > 1 && (
           <Pagination
             currentPage={pagination.page}

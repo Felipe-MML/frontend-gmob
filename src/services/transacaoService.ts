@@ -1,13 +1,13 @@
 import api from "./api";
+import { Cliente } from "./clienteService";
+import { Corretor } from "./corretorService";
 
-// Interface para os dados de criação de uma transação
 export interface CreateTransacaoDto {
   imovel_id: number;
   cpf: string;
   tipo_transacao: "venda" | "aluguel";
 }
 
-// Interface para o objeto de transação retornado pela API
 export interface Transacao {
   transacao_id: number;
   imovel_id: number;
@@ -16,6 +16,8 @@ export interface Transacao {
   valor_transacao: number;
   data_transacao: string;
   tipo_transacao: "venda" | "aluguel";
+  cliente: Cliente;
+  corretor: Corretor;
 }
 
 export const createTransacao = async (

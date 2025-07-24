@@ -29,7 +29,9 @@ const AgendarVisitaModal = ({
   const [dataVisita, setDataVisita] = useState(
     new Date().toISOString().split("T")[0]
   );
-  const [horaVisita, setHoraVisita] = useState("14:00");
+  const [horaInicio, setHoraInicio] = useState("14:00");
+  const [horaTermino, setHoraTermino] = useState("15:00");
+  const [observacoes, setObservacoes] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [isSaving, setIsSaving] = useState(false);
 
@@ -48,6 +50,7 @@ const AgendarVisitaModal = ({
     setError(null);
     setIsSaving(false);
     setSelectedClienteId("");
+    setHoraTermino("15:00");
     onClose();
   };
 
@@ -55,25 +58,34 @@ const AgendarVisitaModal = ({
     e.preventDefault();
     setError(null);
 
-    if (!imovel || !selectedClienteId || !user || !dataVisita || !horaVisita) {
+    if (
+      !imovel ||
+      !selectedClienteId ||
+      !user ||
+      !dataVisita ||
+      !horaInicio ||
+      !horaTermino
+    ) {
       setError("Por favor, preencha todos os campos.");
       return;
     }
 
     setIsSaving(true);
 
-    const dataHoraVisita = new Date(`${dataVisita}T${horaVisita}:00`);
+    const dataHoraVisita = new Date(`${dataVisita}T${horaInicio}:00`);
 
     const visitaData: CreateVisitaDto = {
       imovel_id: imovel.imovel_id,
       cliente_id: selectedClienteId as number,
-      corretor_id: user.corretor_id,
-      data_visita: dataHoraVisita.toISOString(),
+      data_visita: dataVisita,
+      hora_inicio: horaInicio,
+      hora_termino: horaTermino,
+      observacoes: observacoes,
     };
 
     try {
       await createVisita(visitaData);
-      alert("Visita agendada com sucesso!");
+
       handleClose();
     } catch (err) {
       setError("Falha ao agendar a visita. Verifique os dados.");
@@ -145,10 +157,38 @@ const AgendarVisitaModal = ({
               <input
                 id="hora_visita"
                 type="time"
-                value={horaVisita}
-                onChange={(e) => setHoraVisita(e.target.value)}
+                value={horaInicio}
+                onChange={(e) => setHoraInicio(e.target.value)}
                 required
                 className="w-full rounded-md border border-gray-300 p-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="hora_termino" className="block mb-1 font-medium">
+                Hora de Término
+              </label>
+              <input
+                id="hora_termino"
+                type="time"
+                value={horaTermino}
+                onChange={(e) => setHoraTermino(e.target.value)}
+                required
+                className="w-full rounded-md border border-gray-300 p-2"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="observacoes" className="block mb-1 font-medium">
+                Observações (Opcional)
+              </label>
+              <textarea
+                id="observacoes"
+                value={observacoes}
+                onChange={(e) => setObservacoes(e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Detalhes sobre a visita..."
               />
             </div>
 

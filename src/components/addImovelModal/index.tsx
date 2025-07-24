@@ -31,8 +31,8 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
   const [area, setArea] = useState("");
   const [error, setError] = useState<string | null>(null);
   const [numeroComodos, setNumeroComodos] = useState("");
+  const [descricao, setDescricao] = useState("");
 
-  // Buscar tipos de imóveis quando o modal abrir
   useEffect(() => {
     if (open) {
       getTiposImoveis()
@@ -70,6 +70,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         numero_comodos: parseInt(numeroComodos) || 0,
         valor: parseFloat(valor),
         area: parseFloat(area),
+        descricao: descricao,
       });
 
       // Reset campos
@@ -81,6 +82,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       setNumero("");
       setValor("");
       setArea("");
+      setDescricao("");
       onClose();
     } catch {
       setError("Erro ao cadastrar imóvel. Verifique os dados.");
@@ -91,7 +93,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
     <Dialog open={open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity"
+        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <DialogPanel className="w-full max-w-md max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
@@ -253,6 +255,20 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                 required
                 className="w-full rounded-md border border-gray-300 p-2"
                 placeholder="Área"
+              />
+            </div>
+
+            <div>
+              <label htmlFor="descricao" className="block mb-1 font-medium">
+                Descrição (Opcional)
+              </label>
+              <textarea
+                id="descricao"
+                value={descricao}
+                onChange={(e) => setDescricao(e.target.value)}
+                rows={3}
+                className="w-full rounded-md border border-gray-300 p-2"
+                placeholder="Detalhes sobre o imóvel..."
               />
             </div>
 
