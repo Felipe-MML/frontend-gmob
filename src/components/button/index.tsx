@@ -5,7 +5,20 @@ export interface IButtonProps {
 const Button = ({ text }: IButtonProps) => {
   return (
     <div>
-      <button className="bg-button text-white w-[386px] h-[38px] rounded-md border border-black hover:bg-violet-500">
+      <button
+        className="
+      bg-button 
+      text-white 
+      font-bold 
+      w-[386px] 
+      h-[38px] 
+      rounded-md 
+      hover:bg-violet 
+      hover:text-black 
+      hover:cursor-pointer
+      transition 
+      duration-300"
+      >
         {text}
       </button>
     </div>
