@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Button from "@/components/button";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import { toast } from "react-toastify";
+import Image from "next/image";
 
 const loginSchema = z.object({
   email: z
@@ -54,9 +55,12 @@ const LoginPage: React.FC = () => {
 
   return (
     <div className="flex min-h-screen bg-white">
-      <img
+      <Image
+        alt="Logo Gmob"
         className="absolute top-12 left-10 w-[150px] h-[55px] hover:scale-110 transition duration-200"
         src="/logo.png"
+        width={150}
+        height={55}
       />
       <div className="w-screen lg:w-1/2 flex flex-col justify-center items-center">
         <div className="flex justify-center sm:w-full items-center">
@@ -129,7 +133,7 @@ const LoginPage: React.FC = () => {
           </div>
         </div>
       </div>
-      <div className="hidden lg:flex w-1/2 m-3 bg-lightPurple rounded-2xl flex-col justify-center items-center">
+      <div className="hidden lg:flex w-1/2 m-3 bg-lightPurple rounded-2xl flex-col justify-center items-center px-6">
         <h1 className="text-3xl font-bold">
           Descomplique sua gestão imobiliária
         </h1>
@@ -137,7 +141,12 @@ const LoginPage: React.FC = () => {
           Acesse a plataforma para saber como controlar todos os aspectos do seu
           negócio.
         </p>
-        <img src="/imageLogin.png"></img>
+        <Image
+          src="/imagemLogin.svg"
+          alt="imagem inicial"
+          width={500}
+          height={500}
+        ></Image>
       </div>
     </div>
   );
