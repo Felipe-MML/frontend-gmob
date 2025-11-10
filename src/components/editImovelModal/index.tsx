@@ -7,6 +7,13 @@ import {
   DialogBackdrop,
 } from "@headlessui/react";
 import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
+import {
   Imovel,
   UpdateImovelDto,
   TipoImovel,
@@ -27,6 +34,8 @@ const EditImovelModal = ({
   onSave,
   imovel,
 }: EditImovelModalProps) => {
+  const [step, setStep] = useState(1);
+
   const [tiposImoveis, setTiposImoveis] = useState<TipoImovel[]>([]);
   const [tipoImovelId, setTipoImovelId] = useState<number | "">("");
   const [status, setStatus] = useState("disponivel");
@@ -40,6 +49,9 @@ const EditImovelModal = ({
   const [numeroComodos, setNumeroComodos] = useState("");
   const [descricao, setDescricao] = useState("");
   const [isSaving, setIsSaving] = useState(false);
+
+  const nextStep = () => setStep((prev) => prev + 1);
+  const prevStep = () => setStep((prev) => prev - 1);
 
   useEffect(() => {
     if (imovel) {
@@ -96,195 +108,287 @@ const EditImovelModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50">
+    <Dialog open={open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity"
+        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-md max-h-[90vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
-          <DialogTitle className="text-lg font-bold">Editar Imóvel</DialogTitle>
+        <DialogPanel className="w-[695px] h-[638px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
+          <DialogTitle className="text-3xl font-bold">
+            Adicionar Novo Imóvel
+          </DialogTitle>
+
+          <h2 className="mt-10 text-2xl font-bold border-b-1 p-2 border-gray-400">
+            {step == 1 && "Informações do Imóvel"}
+            {step == 2 && "Informações de Endereço"}
+          </h2>
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
-            <div>
-              <label
-                htmlFor="edit-tipoImovelId"
-                className="block mb-1 font-medium"
-              >
-                Tipo de Imóvel
-              </label>
-              <select
-                id="edit-tipoImovelId"
-                value={tipoImovelId}
-                onChange={(e) => setTipoImovelId(parseInt(e.target.value))}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
-              >
-                {tiposImoveis.map((tipo) => (
-                  <option key={tipo.tipo_imovel_id} value={tipo.tipo_imovel_id}>
-                    {tipo.nome_tipo}
-                  </option>
-                ))}
-              </select>
-            </div>
+            <div className=" min-h-98">
+              <div className="flex flex-col items-center bg-gray rounded-2xl p-4">
+                {step == 1 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex w-full gap-3">
+                      {/* Tipo Imóvel */}
+                      <div>
+                        <label
+                          htmlFor="tipoImovelId"
+                          className="block mb-1 font-medium"
+                        >
+                          Tipo de Imóvel
+                        </label>
+                        <Select
+                          value={tipoImovelId ? String(tipoImovelId) : ""}
+                          onValueChange={(value) =>
+                            setTipoImovelId(parseInt(value))
+                          }
+                        >
+                          <SelectTrigger className="w-[275px] py-5 bg-white shadow-none">
+                            <SelectValue placeholder="Selecione o tipo" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            {tiposImoveis.map((tipo) => (
+                              <SelectItem
+                                key={tipo.tipo_imovel_id}
+                                value={String(tipo.tipo_imovel_id)}
+                              >
+                                {tipo.nome_tipo}
+                              </SelectItem>
+                            ))}
+                          </SelectContent>
+                        </Select>
+                      </div>
 
-            <div>
-              <label htmlFor="edit-status" className="block mb-1 font-medium">
-                Status
-              </label>
-              <select
-                id="edit-status"
-                value={status}
-                onChange={(e) => setStatus(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              >
-                <option value="disponivel">Disponível</option>
-                <option value="vendido">Vendido</option>
-                <option value="alugado">Alugado</option>
-              </select>
-            </div>
+                      {/* Status */}
+                      <div>
+                        <label
+                          htmlFor="status"
+                          className="block mb-1 font-medium"
+                        >
+                          Status
+                        </label>
+                        <Select
+                          value={status}
+                          onValueChange={(value) => setStatus(value)}
+                        >
+                          <SelectTrigger className="w-[275px] py-5 bg-white shadow-none">
+                            <SelectValue placeholder="Selecione o status" />
+                          </SelectTrigger>
+                          <SelectContent>
+                            <SelectItem value="disponivel">
+                              Disponível
+                            </SelectItem>
+                            <SelectItem value="vendido">Vendido</SelectItem>
+                            <SelectItem value="alugado">Alugado</SelectItem>
+                          </SelectContent>
+                        </Select>
+                      </div>
+                    </div>
 
-            <div>
-              <label htmlFor="edit-estado" className="block mb-1 font-medium">
-                Estado
-              </label>
-              <input
-                id="edit-estado"
-                type="text"
-                value={estado}
-                onChange={(e) => setEstado(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="edit-cidade" className="block mb-1 font-medium">
-                Cidade
-              </label>
-              <input
-                id="edit-cidade"
-                type="text"
-                value={cidade}
-                onChange={(e) => setCidade(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="edit-rua" className="block mb-1 font-medium">
-                Rua
-              </label>
-              <input
-                id="edit-rua"
-                type="text"
-                value={rua}
-                onChange={(e) => setRua(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="edit-numero" className="block mb-1 font-medium">
-                Número
-              </label>
-              <input
-                id="edit-numero"
-                type="text"
-                value={numero}
-                onChange={(e) => setNumero(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-complemento"
-                className="block mb-1 font-medium"
-              >
-                Complemento
-              </label>
-              <input
-                id="edit-complemento"
-                type="text"
-                value={complemento}
-                onChange={(e) => setComplemento(e.target.value)}
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
+                    <div className="flex w-full gap-3">
+                      {/* Número de cômodos */}
+                      <div>
+                        <label
+                          htmlFor="numero_comodos"
+                          className="block mb-1 font-medium"
+                        >
+                          Número de Cômodos
+                        </label>
+                        <input
+                          id="numero_comodos"
+                          type="text"
+                          value={numeroComodos}
+                          onChange={(e) => setNumeroComodos(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border bg-white p-2"
+                          placeholder="Número de Cômodos"
+                        />
+                      </div>
 
-            <div>
-              <label htmlFor="edit-valor" className="block mb-1 font-medium">
-                Valor (R$)
-              </label>
-              <input
-                id="edit-valor"
-                type="number"
-                step="0.01"
-                value={valor}
-                onChange={(e) => setValor(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label htmlFor="edit-area" className="block mb-1 font-medium">
-                Área (m²)
-              </label>
-              <input
-                id="edit-area"
-                type="number"
-                step="0.01"
-                value={area}
-                onChange={(e) => setArea(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-numeroComodos"
-                className="block mb-1 font-medium"
-              >
-                Nº de Cômodos
-              </label>
-              <input
-                id="edit-numeroComodos"
-                type="number"
-                value={numeroComodos}
-                onChange={(e) => setNumeroComodos(e.target.value)}
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-            <div>
-              <label
-                htmlFor="edit-descricao"
-                className="block mb-1 font-medium"
-              >
-                Descrição
-              </label>
-              <textarea
-                id="edit-descricao"
-                value={descricao}
-                onChange={(e) => setDescricao(e.target.value)}
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
+                      {/* Área */}
+                      <div>
+                        <label
+                          htmlFor="area"
+                          className="block mb-1 font-medium"
+                        >
+                          Área (m²)
+                        </label>
+                        <input
+                          id="area"
+                          type="number"
+                          step="0.01"
+                          value={area}
+                          onChange={(e) => setArea(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border p-2 bg-white"
+                          placeholder="Área"
+                        />
+                      </div>
+                    </div>
 
-            <div className="mt-6 flex justify-end space-x-2">
-              <button
-                type="button"
-                onClick={onClose}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300"
-              >
-                Cancelar
-              </button>
-              <button
-                type="submit"
-                disabled={isSaving}
-                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
-              >
-                {isSaving ? "A guardar..." : "Salvar Alterações"}
-              </button>
+                    {/* Valor */}
+                    <div>
+                      <label htmlFor="valor" className="block mb-1 font-medium">
+                        Valor
+                      </label>
+                      <input
+                        id="valor"
+                        type="number"
+                        value={valor}
+                        onChange={(e) => setValor(e.target.value)}
+                        required
+                        className="w-[275px] rounded-md border border-gray-300 p-2 bg-white"
+                        placeholder="Valor"
+                      />
+                    </div>
+
+                    {/* Descrição */}
+
+                    <div>
+                      <label
+                        htmlFor="descricao"
+                        className="block mb-1 font-medium"
+                      >
+                        Descrição (Opcional)
+                      </label>
+                      <textarea
+                        id="descricao"
+                        value={descricao}
+                        onChange={(e) => setDescricao(e.target.value)}
+                        rows={3}
+                        className="w-full rounded-md border p-2 resize-none bg-white"
+                        placeholder="Detalhes sobre o imóvel..."
+                      />
+                    </div>
+                  </div>
+                )}
+
+                {step == 2 && (
+                  <div className="flex flex-col gap-2">
+                    <div className="flex w-full gap-3">
+                      {/* Estado */}
+                      <div>
+                        <label
+                          htmlFor="estado"
+                          className="block mb-1 font-medium"
+                        >
+                          Estado
+                        </label>
+                        <input
+                          id="estado"
+                          type="text"
+                          value={estado}
+                          onChange={(e) => setEstado(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border p-2 bg-white"
+                          placeholder="Estado"
+                        />
+                      </div>
+
+                      {/* Cidade */}
+                      <div>
+                        <label
+                          htmlFor="cidade"
+                          className="block mb-1 font-medium"
+                        >
+                          Cidade
+                        </label>
+                        <input
+                          id="cidade"
+                          type="text"
+                          value={cidade}
+                          onChange={(e) => setCidade(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border p-2 bg-white"
+                          placeholder="Cidade"
+                        />
+                      </div>
+                    </div>
+
+                    <div className="flex w-full gap-3">
+                      {/* Rua */}
+                      <div>
+                        <label htmlFor="rua" className="block mb-1 font-medium">
+                          Rua
+                        </label>
+                        <input
+                          id="rua"
+                          type="text"
+                          value={rua}
+                          onChange={(e) => setRua(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border p-2 bg-white"
+                          placeholder="Rua"
+                        />
+                      </div>
+
+                      {/* Número */}
+                      <div>
+                        <label
+                          htmlFor="numero"
+                          className="block mb-1 font-medium"
+                        >
+                          Número
+                        </label>
+                        <input
+                          id="numero"
+                          type="text"
+                          value={numero}
+                          onChange={(e) => setNumero(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border p-2 bg-white"
+                          placeholder="Número"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Complemento */}
+                    <div>
+                      <label
+                        htmlFor="complemento"
+                        className="block mb-1 font-medium"
+                      >
+                        Complemento (Opcional)
+                      </label>
+                      <input
+                        id="complemento"
+                        type="text"
+                        value={complemento}
+                        onChange={(e) => setComplemento(e.target.value)}
+                        className="w-[275px] rounded-md borde p-2 bg-white"
+                        placeholder="Detalhes adicionais..."
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+            <div className="mt-6 flex justify-between items-center space-x-2 ">
+              <p>Página {step} de 2</p>
+              {step == 1 && (
+                <button
+                  onClick={nextStep}
+                  className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition duration-300"
+                >
+                  Próximo
+                </button>
+              )}
+              {step == 2 && (
+                <div className="flex gap-4">
+                  <button
+                    onClick={prevStep}
+                    className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition duration-300"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="submit"
+                    className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition duration-300"
+                  >
+                    Salvar
+                  </button>
+                </div>
+              )}
             </div>
           </form>
         </DialogPanel>
