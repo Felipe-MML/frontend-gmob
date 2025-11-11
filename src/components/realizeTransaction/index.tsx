@@ -117,94 +117,118 @@ const RealizarTransacaoModal = ({
         className="fixed inset-0 bg-black/30 transition-opacity"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-          <DialogTitle className="text-lg font-bold">
+        <DialogPanel className="w-[695px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
+          <DialogTitle className="text-3xl font-bold">
             Realizar Transação
           </DialogTitle>
           <p className="text-sm text-gray-500 mt-1">
             Imóvel: {imovel?.rua}, {imovel?.numero}
           </p>
 
+          <h2 className="mt-4 text-2xl font-bold border-b-1 text-gray-700 border-gray-400">
+            Informações da Transação
+          </h2>
+
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div>
-              <label htmlFor="cliente" className="block mb-1 font-medium">
-                Cliente
-              </label>
-              <select
-                id="cliente"
-                value={selectedClienteId}
-                onChange={(e) => setSelectedClienteId(Number(e.target.value))}
-                required
-                className="w-full border border-gray-300 rounded-md p-2"
-              >
-                <option value="" disabled>
-                  Selecione um cliente
-                </option>
-                {clientes.map((cliente) => (
-                  <option key={cliente.cliente_id} value={cliente.cliente_id}>
-                    {cliente.nome} ({cliente.cpf})
-                  </option>
-                ))}
-              </select>
+              <div className="flex flex-col items-center bg-gray rounded-2xl p-4">
+                
+                {/* Linha 1 */}
+                <div className="flex w-full gap-3 justify-between">
+                  {/* Cliente */}
+                  <div>
+                    <label htmlFor="cliente" className="block mb-1 font-medium">
+                      Cliente
+                    </label>
+                    <select
+                      id="cliente"
+                      value={selectedClienteId}
+                      onChange={(e) => setSelectedClienteId(Number(e.target.value))}
+                      required
+                      className="w-[275px] rounded-md border p-2 bg-white"
+                    >
+                      <option value="" disabled>
+                        Selecione um cliente
+                      </option>
+                      {clientes.map((cliente) => (
+                        <option key={cliente.cliente_id} value={cliente.cliente_id}>
+                          {cliente.nome} ({cliente.cpf})
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+
+                  {/* Tipo de Transação */}
+                  <div>
+                    <label htmlFor="tipo_transacao" className="block mb-1 font-medium">
+                      Tipo de Transação
+                    </label>
+                    <select
+                      id="tipo_transacao"
+                      value={tipoTransacao}
+                      onChange={(e) =>
+                        setTipoTransacao(e.target.value as "venda" | "aluguel")
+                      }
+                      required
+                      className="w-[275px] rounded-md border p-2 bg-white"
+                    >
+                      <option value="venda">Venda</option>
+                      <option value="aluguel">Aluguel</option>
+                    </select>
+                  </div>
+                </div>
+
+                {/* Linha 2 */}
+                <div className="flex w-full gap-3 mt-2 justify-between">
+                  {/* Data da Transação */}
+                  <div>
+                    <label htmlFor="data_transacao" className="block mb-1 font-medium">
+                      Data da Transação
+                    </label>
+                    <input
+                      id="data_transacao"
+                      type="date"
+                      value={dataTransacao}
+                      onChange={(e) => setDataTransacao(e.target.value)}
+                      required
+                      className="w-[275px] rounded-md border p-2 bg-white"
+                    />
+                  </div>
+
+                  {/* Espaço vazio para manter alinhamento */}
+                  <div className="w-[275px]" />
+                </div>
+
+                {/* Erro */}
+                {error && (
+                  <p className="text-sm text-red-500 mt-2 text-left w-full">
+                    {error}
+                  </p>
+                )}
+
+              </div>
             </div>
 
-            <div>
-              <label
-                htmlFor="tipo_transacao"
-                className="block mb-1 font-medium"
-              >
-                Tipo de Transação
-              </label>
-              <select
-                id="tipo_transacao"
-                value={tipoTransacao}
-                onChange={(e) =>
-                  setTipoTransacao(e.target.value as "venda" | "aluguel")
-                }
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              >
-                <option value="venda">Venda</option>
-                <option value="aluguel">Aluguel</option>
-              </select>
-            </div>
-
-            <div>
-              <label
-                htmlFor="data_transacao"
-                className="block mb-1 font-medium"
-              >
-                Data da Transação
-              </label>
-              <input
-                id="data_transacao"
-                type="date"
-                value={dataTransacao}
-                onChange={(e) => setDataTransacao(e.target.value)}
-                required
-                className="w-full rounded-md border border-gray-300 p-2"
-              />
-            </div>
-
-            {error && <p className="text-sm text-red-500">{error}</p>}
-
-            <div className="mt-6 flex justify-end space-x-2">
+            {/* Botões */}
+            <div className="mt-6 flex justify-end items-center space-x-4">
               <button
                 type="button"
                 onClick={handleClose}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300"
+                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300 transition duration-300"
               >
                 Cancelar
               </button>
+
               <button
                 type="submit"
                 disabled={isSaving}
-                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
+                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 transition duration-300 disabled:opacity-70"
               >
                 {isSaving ? "Salvando..." : "Confirmar Transação"}
               </button>
             </div>
           </form>
+
         </DialogPanel>
       </div>
     </Dialog>
