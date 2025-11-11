@@ -51,7 +51,7 @@ export const useVisitas = () => {
 
         setVisitas(enrichedVisitas);
         setPagination(response.pagination);
-      } catch (err) {
+      } catch {
         setError("Não foi possível carregar a lista de visitas.");
       } finally {
         setLoading(false);
@@ -73,6 +73,10 @@ export const useVisitas = () => {
     }
   };
 
+  const refresh = () => {
+    fetchVisitas(currentPage);
+  };
+
   return {
     visitas,
     pagination,
@@ -80,5 +84,6 @@ export const useVisitas = () => {
     error,
     removeVisita,
     handlePageChange: setCurrentPage,
+    refresh,
   };
 };
