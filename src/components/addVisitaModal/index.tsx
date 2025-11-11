@@ -37,12 +37,10 @@ const AddVisitaModal = ({ open, onClose, onSave }: AddVisitaModalProps) => {
 
     const load = async () => {
       try {
-        // Carregar clientes ativos
         const clientesResp = await getClientes({ page: 1, limit: 1000 });
         const ativos = clientesResp.clientes.filter((c) => !c.arquivado);
         setClientes(ativos);
 
-        // Carregar imóveis disponíveis
         const imoveisResp = await getImoveis({
           page: 1,
           limit: 1000,
@@ -84,7 +82,6 @@ const AddVisitaModal = ({ open, onClose, onSave }: AddVisitaModalProps) => {
       return;
     }
 
-    // Validação simples de horário
     if (horaTermino <= horaInicio) {
       toast.error("Hora de término deve ser maior que a hora de início.");
       return;

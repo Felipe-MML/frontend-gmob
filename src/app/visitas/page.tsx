@@ -40,7 +40,6 @@ const VisitasPageContent = () => {
 
   const handleSaveVisita = async (data: CreateVisitaDto) => {
     await createVisita(data);
-    // Atualizar a lista após criar
     refresh();
   };
 
