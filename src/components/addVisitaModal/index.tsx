@@ -1,32 +1,29 @@
 "use client";
 
-import { useState, useEffect, FormEvent } from "react";
+import { useEffect, useState, FormEvent } from "react";
 import {
   Dialog,
+  DialogBackdrop,
   DialogPanel,
   DialogTitle,
-  DialogBackdrop,
 } from "@headlessui/react";
-import { useAuth } from "@/context/AuthContext";
-import { Imovel } from "@/services/imovelService";
-import { Cliente, getClientes } from "@/services/clienteService";
-import { createVisita, CreateVisitaDto } from "@/services/visitaService";
 import { toast } from "react-toastify";
+import { Cliente, getClientes } from "@/services/clienteService";
+import { Imovel, getImoveis } from "@/services/imovelService";
+import { CreateVisitaDto } from "@/services/visitaService";
 
-interface AgendarVisitaModalProps {
+interface AddVisitaModalProps {
   open: boolean;
   onClose: () => void;
-  imovel: Imovel | null;
+  onSave: (data: CreateVisitaDto) => Promise<void>;
 }
 
-const AgendarVisitaModal = ({
-  open,
-  onClose,
-  imovel,
-}: AgendarVisitaModalProps) => {
-  const { user } = useAuth();
+const AddVisitaModal = ({ open, onClose, onSave }: AddVisitaModalProps) => {
   const [clientes, setClientes] = useState<Cliente[]>([]);
-  const [selectedClienteId, setSelectedClienteId] = useState<number | "">("");
+  const [imoveis, setImoveis] = useState<Imovel[]>([]);
+
+  const [clienteId, setClienteId] = useState<number | "">("");
+  const [imovelId, setImovelId] = useState<number | "">("");
   const [dataVisita, setDataVisita] = useState(
     new Date().toISOString().split("T")[0]
   );
@@ -36,61 +33,79 @@ const AgendarVisitaModal = ({
   const [isSaving, setIsSaving] = useState(false);
 
   useEffect(() => {
-    if (open) {
-      getClientes({ page: 1, limit: 1000 })
-        .then((response) => {
-          const clientesAtivos = response.clientes.filter((c) => !c.arquivado);
-          setClientes(clientesAtivos);
-          if (clientesAtivos.length > 0) {
-            setSelectedClienteId(clientesAtivos[0].cliente_id);
-          }
-        })
-        .catch(() => toast.error("Erro ao carregar a lista de clientes."));
-    }
+    if (!open) return;
+
+    const load = async () => {
+      try {
+        // Carregar clientes ativos
+        const clientesResp = await getClientes({ page: 1, limit: 1000 });
+        const ativos = clientesResp.clientes.filter((c) => !c.arquivado);
+        setClientes(ativos);
+
+        // Carregar imóveis disponíveis
+        const imoveisResp = await getImoveis({
+          page: 1,
+          limit: 1000,
+          status: "disponivel",
+        });
+        setImoveis(imoveisResp.data);
+
+        if (ativos.length > 0) setClienteId(ativos[0].cliente_id);
+        if (imoveisResp.data.length > 0)
+          setImovelId(imoveisResp.data[0].imovel_id);
+      } catch {
+        toast.error("Erro ao carregar dados para nova visita.");
+      }
+    };
+
+    load();
   }, [open]);
 
-  const handleClose = () => {
-    setIsSaving(false);
-    setSelectedClienteId("");
+  const resetForm = () => {
+    setClienteId("");
+    setImovelId("");
+    setDataVisita(new Date().toISOString().split("T")[0]);
+    setHoraInicio("14:00");
     setHoraTermino("15:00");
+    setObservacoes("");
+    setIsSaving(false);
+  };
+
+  const handleClose = () => {
+    resetForm();
     onClose();
   };
 
   const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
-    if (
-      !imovel ||
-      !selectedClienteId ||
-      !user ||
-      !dataVisita ||
-      !horaInicio ||
-      !horaTermino
-    ) {
+    if (!clienteId || !imovelId || !dataVisita || !horaInicio || !horaTermino) {
       toast.error("Preencha todos os campos obrigatórios.");
       return;
     }
 
+    // Validação simples de horário
+    if (horaTermino <= horaInicio) {
+      toast.error("Hora de término deve ser maior que a hora de início.");
+      return;
+    }
+
     setIsSaving(true);
-
-    const dataHoraVisita = new Date(`${dataVisita}T${horaInicio}:00`);
-
-    const visitaData: CreateVisitaDto = {
-      imovel_id: imovel.imovel_id,
-      cliente_id: selectedClienteId as number,
+    const dto: CreateVisitaDto = {
+      cliente_id: clienteId as number,
+      imovel_id: imovelId as number,
       data_visita: dataVisita,
       hora_inicio: horaInicio,
       hora_termino: horaTermino,
-      observacoes: observacoes,
+      observacoes: observacoes || undefined,
     };
 
     try {
-      await createVisita(visitaData);
-      toast.success("Visita agendada com sucesso!");
+      await onSave(dto);
+      toast.success("Visita criada com sucesso!");
       handleClose();
-    } catch (err) {
-      toast.error("Falha ao agendar a visita. Verifique os dados.");
-      console.error(err);
+    } catch {
+      toast.error("Falha ao criar a visita. Verifique os dados.");
     } finally {
       setIsSaving(false);
     }
@@ -103,15 +118,10 @@ const AgendarVisitaModal = ({
         className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-[695px] max-h-[80vh] overflow-y-auto rounded-lg bg-white p-6 shadow-xl">
-          <DialogTitle className="text-3xl font-bold">
-            Agendar Visita
-          </DialogTitle>
-          <p className="text-sm text-gray-500 mt-1">
-            Imóvel: {imovel?.rua}, {imovel?.numero}
-          </p>
+        <DialogPanel className="w-[695px] h-[638px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
+          <DialogTitle className="text-3xl font-bold">Nova Visita</DialogTitle>
 
-          <h2 className="mt-4 text-2xl font-bold border-b-1 text-gray-700 border-gray-400">
+          <h2 className="mt-10 text-2xl font-bold border-b-1 p-2 border-gray-400">
             Informações da Visita
           </h2>
 
@@ -129,28 +139,51 @@ const AgendarVisitaModal = ({
                     </label>
                     <select
                       id="cliente-visita"
-                      value={selectedClienteId}
-                      onChange={(e) =>
-                        setSelectedClienteId(Number(e.target.value))
-                      }
+                      value={clienteId}
+                      onChange={(e) => setClienteId(Number(e.target.value))}
                       required
                       className="w-[275px] rounded-md border p-2 bg-white"
                     >
                       <option value="" disabled>
                         Selecione um cliente
                       </option>
-                      {clientes.map((cliente) => (
-                        <option
-                          key={cliente.cliente_id}
-                          value={cliente.cliente_id}
-                        >
-                          {cliente.nome} ({cliente.cpf})
+                      {clientes.map((c) => (
+                        <option key={c.cliente_id} value={c.cliente_id}>
+                          {c.nome} ({c.cpf})
                         </option>
                       ))}
                     </select>
                   </div>
 
-                  {/* Data da Visita */}
+                  {/* Imóvel */}
+                  <div>
+                    <label
+                      htmlFor="imovel-visita"
+                      className="block mb-1 font-medium"
+                    >
+                      Imóvel
+                    </label>
+                    <select
+                      id="imovel-visita"
+                      value={imovelId}
+                      onChange={(e) => setImovelId(Number(e.target.value))}
+                      required
+                      className="w-[275px] rounded-md border p-2 bg-white"
+                    >
+                      <option value="" disabled>
+                        Selecione um imóvel
+                      </option>
+                      {imoveis.map((i) => (
+                        <option key={i.imovel_id} value={i.imovel_id}>
+                          {i.rua}, {i.numero} — {i.cidade}/{i.estado}
+                        </option>
+                      ))}
+                    </select>
+                  </div>
+                </div>
+
+                <div className="flex w-full gap-3 mt-2 justify-between">
+                  {/* Data */}
                   <div>
                     <label
                       htmlFor="data_visita"
@@ -167,19 +200,17 @@ const AgendarVisitaModal = ({
                       className="w-[275px] rounded-md border p-2 bg-white"
                     />
                   </div>
-                </div>
 
-                <div className="flex w-full gap-3 mt-2 justify-between">
-                  {/* Hora de Início */}
+                  {/* Hora início */}
                   <div>
                     <label
-                      htmlFor="hora_visita"
+                      htmlFor="hora_inicio"
                       className="block mb-1 font-medium"
                     >
                       Hora de Início
                     </label>
                     <input
-                      id="hora_visita"
+                      id="hora_inicio"
                       type="time"
                       value={horaInicio}
                       onChange={(e) => setHoraInicio(e.target.value)}
@@ -187,8 +218,10 @@ const AgendarVisitaModal = ({
                       className="w-[275px] rounded-md border p-2 bg-white"
                     />
                   </div>
+                </div>
 
-                  {/* Hora de Término */}
+                <div className="flex w-full gap-3 mt-2 justify-between">
+                  {/* Hora término */}
                   <div>
                     <label
                       htmlFor="hora_termino"
@@ -205,9 +238,7 @@ const AgendarVisitaModal = ({
                       className="w-[275px] rounded-md border p-2 bg-white"
                     />
                   </div>
-                </div>
 
-                <div className="flex w-full gap-3 mt-2 justify-between">
                   {/* Observações */}
                   <div>
                     <label
@@ -216,16 +247,15 @@ const AgendarVisitaModal = ({
                     >
                       Observações (Opcional)
                     </label>
-                    <textarea
+                    <input
                       id="observacoes"
+                      type="text"
                       value={observacoes}
                       onChange={(e) => setObservacoes(e.target.value)}
-                      rows={3}
                       className="w-[275px] rounded-md border p-2 bg-white"
-                      placeholder="Detalhes sobre a visita..."
+                      placeholder="Detalhes adicionais..."
                     />
                   </div>
-                  <div className="w-[275px]" />
                 </div>
               </div>
             </div>
@@ -243,7 +273,7 @@ const AgendarVisitaModal = ({
                 disabled={isSaving}
                 className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 transition duration-300 disabled:opacity-70"
               >
-                {isSaving ? "Agendando..." : "Confirmar Visita"}
+                {isSaving ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>
@@ -253,4 +283,4 @@ const AgendarVisitaModal = ({
   );
 };
 
-export default AgendarVisitaModal;
+export default AddVisitaModal;

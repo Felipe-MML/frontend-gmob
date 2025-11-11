@@ -6,11 +6,17 @@ import PrivateRoute from "@/components/privateRoute";
 import PageTitle from "@/components/pagetitle";
 import Table, { ColumDef } from "@/components/table";
 import Pagination from "@/components/Pagination";
-import { Visita } from "@/services/visitaService";
+import {
+  Visita,
+  CreateVisitaDto,
+  createVisita,
+} from "@/services/visitaService";
 import { FaTrash, FaEye } from "react-icons/fa";
 import Link from "next/link";
 import DeleteModal from "@/components/deleteModal";
 import { toast } from "react-toastify";
+import AddButton from "@/components/addButton";
+import AddVisitaModal from "@/components/addVisitaModal";
 
 const VisitasPageContent = () => {
   const {
@@ -20,14 +26,22 @@ const VisitasPageContent = () => {
     error,
     handlePageChange,
     removeVisita,
+    refresh,
   } = useVisitas();
 
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
   const [selectedVisita, setSelectedVisita] = useState<Visita | null>(null);
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false);
 
   const handleOpenDeleteModal = (visita: Visita) => {
     setSelectedVisita(visita);
     setIsDeleteModalOpen(true);
+  };
+
+  const handleSaveVisita = async (data: CreateVisitaDto) => {
+    await createVisita(data);
+    // Atualizar a lista após criar
+    refresh();
   };
 
   const handleConfirmDelete = async () => {
@@ -36,7 +50,7 @@ const VisitasPageContent = () => {
       await removeVisita(selectedVisita.agendamento_id);
       setIsDeleteModalOpen(false);
       toast.success("Visita apagada com sucesso!");
-    } catch (err) {
+    } catch {
       toast.error("Erro ao apagar visita.");
     }
   };
@@ -63,11 +77,26 @@ const VisitasPageContent = () => {
     {
       header: "Data da Visita",
       accessorKey: "data_visita",
-      cell: (row) =>
-        new Date(row.data_visita).toLocaleString("pt-BR", {
+      cell: (row) => {
+        const data = new Date(row.data_visita);
+        const inicio = new Date(row.hora_inicio);
+
+        // Combina a data de data_visita com a hora de hora_inicio
+        const combined = new Date(
+          data.getFullYear(),
+          data.getMonth(),
+          data.getDate(),
+          inicio.getHours(),
+          inicio.getMinutes(),
+          inicio.getSeconds(),
+          inicio.getMilliseconds()
+        );
+
+        return combined.toLocaleString("pt-BR", {
           dateStyle: "short",
           timeStyle: "short",
-        }),
+        });
+      },
     },
 
     {
@@ -102,6 +131,10 @@ const VisitasPageContent = () => {
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <PageTitle title="Tabela de Visitas Agendadas" />
+          <AddButton
+            text="+ Adicionar"
+            openModal={() => setIsAddModalOpen(true)}
+          />
         </div>
 
         <div className="w-full mt-5">
@@ -135,6 +168,12 @@ const VisitasPageContent = () => {
             </p>
           </DeleteModal>
         )}
+
+        <AddVisitaModal
+          open={isAddModalOpen}
+          onClose={() => setIsAddModalOpen(false)}
+          onSave={handleSaveVisita}
+        />
       </div>
     </div>
   );
