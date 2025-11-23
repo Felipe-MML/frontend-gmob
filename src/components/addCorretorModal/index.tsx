@@ -10,10 +10,10 @@ import {
   DialogTitle,
   DialogBackdrop,
 } from "@headlessui/react";
-import { CreateCorretorDto } from "@/services/corretorService";
 import { IMaskInput } from "react-imask";
-import { toast } from "react-toastify";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { toast } from "react-toastify";
+import { CreateCorretorDto } from "@/services/corretorService";
 
 const corretorSchema = z
   .object({
@@ -24,14 +24,14 @@ const corretorSchema = z
       .min(1, "O email é obrigatório"),
     telefone: z
       .string()
-      .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "O formato do telefone é inválido")
+      .regex(/^\(\d{2}\) \d{5}-\d{4}$/, "Formato inválido")
       .min(1, "O telefone é obrigatório"),
     cpf: z
       .string()
-      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "O formato do CPF é inválido")
+      .regex(/^\d{3}\.\d{3}\.\d{3}-\d{2}$/, "Formato inválido")
       .min(1, "O CPF é obrigatório"),
     senha: z.string().min(6, "A senha deve ter no mínimo 6 caracteres"),
-    confirmarSenha: z.string().min(1, "A confirmação de senha é obrigatória"),
+    confirmarSenha: z.string().min(1, "A confirmação é obrigatória"),
   })
   .refine((data) => data.senha === data.confirmarSenha, {
     message: "As senhas não correspondem",
@@ -40,7 +40,7 @@ const corretorSchema = z
 
 type CorretorFormData = z.infer<typeof corretorSchema>;
 
-interface addCorretorModalProps {
+interface AddCorretorModalProps {
   open: boolean;
   onClose: () => void;
   onSave: (corretorData: CreateCorretorDto) => Promise<void>;
@@ -50,7 +50,7 @@ export default function AddCorretorModal({
   open,
   onClose,
   onSave,
-}: addCorretorModalProps) {
+}: AddCorretorModalProps) {
   const [mostrarSenha, setMostrarSenha] = useState(false);
 
   const {
@@ -80,195 +80,209 @@ export default function AddCorretorModal({
 
   const onSubmit = async (data: CorretorFormData) => {
     try {
-      const corretorData: CreateCorretorDto = {
+      await onSave({
         nome_completo: data.nome_completo,
         email: data.email,
         telefone: data.telefone,
         cpf: data.cpf,
         senha: data.senha,
-      };
-      await onSave(corretorData);
-      toast.success("Corretor adicionado com sucesso!");
+      });
+
+      toast.success("Corretor cadastrado com sucesso!");
       onClose();
-    } catch (err) {
-      toast.error("Erro ao adicionar corretor. Verifique os dados.");
-      console.error(err);
+    } catch {
+      toast.error("Erro ao cadastrar corretor.");
     }
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50">
+    <Dialog open={open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
+        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0"
       />
+
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl transition-all data-closed:translate-y-4 data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in data-closed:sm:translate-y-0 data-closed:sm:scale-95">
-          <DialogTitle className="text-lg font-bold">
+        <DialogPanel className="w-[695px] h-[630px] rounded-lg bg-white p-6 shadow-xl">
+          <DialogTitle className="text-3xl font-bold">
             Adicionar Novo Corretor
           </DialogTitle>
 
+          <h2 className="mt-10 text-2xl font-bold border-b p-2 border-gray-400">
+            Informações do Corretor
+          </h2>
+
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
-            {/* Nome Completo */}
-            <div>
-              <label htmlFor="nome-corretor">Nome Completo</label>
-              <input
-                id="nome-corretor"
-                type="text"
-                {...register("nome_completo")}
-                className={`w-full border rounded-md p-2 ${
-                  errors.nome_completo ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Nome do corretor..."
-              />
-              {errors.nome_completo && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.nome_completo.message}
-                </p>
-              )}
-            </div>
+            <div className="min-h-98">
+              <div className="flex flex-col items-center bg-gray rounded-2xl p-4">
+                <div className="flex justify-center w-full gap-3">
+                  {/* Nome Completo */}
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Nome Completo
+                    </label>
+                    <input
+                      type="text"
+                      {...register("nome_completo")}
+                      className={`w-[275px] rounded-md border p-2 bg-white ${
+                        errors.nome_completo ? "border-red-500" : ""
+                      }`}
+                      placeholder="Nome completo"
+                    />
+                    {errors.nome_completo && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.nome_completo.message}
+                      </p>
+                    )}
+                  </div>
 
-            {/* Email */}
-            <div>
-              <label htmlFor="email-corretor">Email</label>
-              <input
-                id="email-corretor"
-                type="email"
-                {...register("email")}
-                className={`w-full border rounded-md p-2 ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                }`}
-                placeholder="Email do corretor..."
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
+                  {/* Email */}
+                  <div>
+                    <label className="block mb-1 font-medium">Email</label>
+                    <input
+                      type="email"
+                      {...register("email")}
+                      className={`w-[275px] rounded-md border p-2 bg-white ${
+                        errors.email ? "border-red-500" : ""
+                      }`}
+                      placeholder="Email"
+                    />
+                    {errors.email && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.email.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-            {/* Telefone */}
-            <div>
-              <label htmlFor="telefone-corretor">Telefone</label>
-              <Controller
-                name="telefone"
-                control={control}
-                render={({ field }) => (
-                  <IMaskInput
-                    mask="(00) 00000-0000"
-                    id="telefone-corretor"
-                    value={field.value}
-                    onAccept={field.onChange}
-                    className={`w-full border rounded-md p-2 ${
-                      errors.telefone ? "border-red-500" : "border-gray-300"
-                    }`}
-                    placeholder="Telefone do corretor..."
-                  />
-                )}
-              />
-              {errors.telefone && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.telefone.message}
-                </p>
-              )}
-            </div>
+                <div className="flex justify-center w-full gap-3 mt-3">
+                  {/* Telefone */}
+                  <div>
+                    <label className="block mb-1 font-medium">Telefone</label>
+                    <Controller
+                      name="telefone"
+                      control={control}
+                      render={({ field }) => (
+                        <IMaskInput
+                          mask="(00) 00000-0000"
+                          value={field.value}
+                          onAccept={field.onChange}
+                          className={`w-[275px] rounded-md border p-2 bg-white ${
+                            errors.telefone ? "border-red-500" : ""
+                          }`}
+                          placeholder="Telefone"
+                        />
+                      )}
+                    />
+                    {errors.telefone && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.telefone.message}
+                      </p>
+                    )}
+                  </div>
 
-            {/* CPF */}
-            <div>
-              <label htmlFor="cpf-corretor">CPF</label>
-              <Controller
-                name="cpf"
-                control={control}
-                render={({ field }) => (
-                  <IMaskInput
-                    mask="000.000.000-00"
-                    id="cpf-corretor"
-                    value={field.value}
-                    onAccept={field.onChange}
-                    className={`w-full border rounded-md p-2 ${
-                      errors.cpf ? "border-red-500" : "border-gray-300"
-                    }`}
-                    placeholder="CPF do corretor..."
-                  />
-                )}
-              />
-              {errors.cpf && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.cpf.message}
-                </p>
-              )}
-            </div>
+                  {/* CPF */}
+                  <div>
+                    <label className="block mb-1 font-medium">CPF</label>
+                    <Controller
+                      name="cpf"
+                      control={control}
+                      render={({ field }) => (
+                        <IMaskInput
+                          mask="000.000.000-00"
+                          value={field.value}
+                          onAccept={field.onChange}
+                          className={`w-[275px] rounded-md border p-2 bg-white ${
+                            errors.cpf ? "border-red-500" : ""
+                          }`}
+                          placeholder="CPF"
+                        />
+                      )}
+                    />
+                    {errors.cpf && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.cpf.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
 
-            {/* Senha */}
-            <div>
-              <label htmlFor="senha">Senha</label>
-              <div className="relative">
-                <input
-                  id="senha"
-                  type={mostrarSenha ? "text" : "password"}
-                  {...register("senha")}
-                  className={`w-full border rounded-md p-2 pr-10 ${
-                    errors.senha ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setMostrarSenha(!mostrarSenha)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
-                >
-                  {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
-                </button>
+                <div className="flex justify-center w-full gap-3 mt-3">
+                  {/* Senha */}
+                  <div>
+                    <label className="block mb-1 font-medium">Senha</label>
+                    <div className="relative">
+                      <input
+                        type={mostrarSenha ? "text" : "password"}
+                        {...register("senha")}
+                        className={`w-[275px] rounded-md border p-2 pr-10 bg-white ${
+                          errors.senha ? "border-red-500" : ""
+                        }`}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setMostrarSenha(!mostrarSenha)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                      >
+                        {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    {errors.senha && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.senha.message}
+                      </p>
+                    )}
+                  </div>
+
+                  {/* Confirmar Senha */}
+                  <div>
+                    <label className="block mb-1 font-medium">
+                      Confirmar Senha
+                    </label>
+                    <div className="relative">
+                      <input
+                        type={mostrarSenha ? "text" : "password"}
+                        {...register("confirmarSenha")}
+                        className={`w-[275px] rounded-md border p-2 pr-10 bg-white ${
+                          errors.confirmarSenha ? "border-red-500" : ""
+                        }`}
+                        placeholder="••••••••"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setMostrarSenha(!mostrarSenha)}
+                        className="absolute inset-y-0 right-0 flex items-center pr-3"
+                      >
+                        {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
+                      </button>
+                    </div>
+                    {errors.confirmarSenha && (
+                      <p className="text-red-500 text-sm mt-1">
+                        {errors.confirmarSenha.message}
+                      </p>
+                    )}
+                  </div>
+                </div>
               </div>
-              {errors.senha && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.senha.message}
-                </p>
-              )}
             </div>
 
-            {/* Confirmar Senha */}
-            <div>
-              <label htmlFor="confirmarSenha">Confirmar Senha</label>
-              <div className="relative">
-                <input
-                  id="confirmarSenha"
-                  type={mostrarSenha ? "text" : "password"}
-                  {...register("confirmarSenha")}
-                  className={`w-full border rounded-md p-2 pr-10 ${
-                    errors.confirmarSenha ? "border-red-500" : "border-gray-300"
-                  }`}
-                  placeholder="••••••••"
-                />
-                <button
-                  type="button"
-                  onClick={() => setMostrarSenha(!mostrarSenha)}
-                  className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500"
-                >
-                  {mostrarSenha ? <FaEyeSlash /> : <FaEye />}
-                </button>
-              </div>
-              {errors.confirmarSenha && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.confirmarSenha.message}
-                </p>
-              )}
-            </div>
-
-            <div className="mt-6 flex justify-end space-x-2">
+            {/* Botões */}
+            <div className="mt-6 flex justify-end gap-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium text-gray-800 hover:bg-gray-300"
+                className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition"
               >
                 Cancelar
               </button>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
+                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition disabled:bg-violet-400"
               >
-                {isSubmitting ? "A guardar..." : "Salvar"}
+                {isSubmitting ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>
