@@ -78,114 +78,133 @@ const EditCorretorModal = ({
   };
 
   return (
-    <Dialog open={open} onClose={onClose} className="relative z-50">
+    <Dialog open={open} onClose={onClose} className="relative z-10">
       <DialogBackdrop
         transition
-        className="fixed inset-0 bg-black/30 transition-opacity"
+        className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0"
       />
+
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
-          <DialogTitle className="text-lg font-bold">
-            Editar Corretor
+        <DialogPanel className="w-[695px] h-[630px] rounded-lg bg-white p-6 shadow-xl">
+          <DialogTitle className="text-3xl font-bold">
+            Adicionar Novo Corretor
           </DialogTitle>
 
+          <h2 className="mt-10 text-2xl font-bold border-b p-2 border-gray-400">
+            Informações do Corretor
+          </h2>
+
           <form onSubmit={handleSubmit(onSubmit)} className="mt-4 space-y-4">
-            {/* Nome Completo */}
-            <div>
-              <label>Nome Completo</label>
-              <input
-                type="text"
-                {...register("nome_completo")}
-                className={`w-full border rounded-md p-2 ${
-                  errors.nome_completo ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.nome_completo && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.nome_completo.message}
-                </p>
-              )}
-            </div>
-
-            {/* Email */}
-            <div>
-              <label>Email</label>
-              <input
-                type="email"
-                {...register("email")}
-                className={`w-full border rounded-md p-2 ${
-                  errors.email ? "border-red-500" : "border-gray-300"
-                }`}
-              />
-              {errors.email && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.email.message}
-                </p>
-              )}
-            </div>
-
-            {/* Telefone */}
-            <div>
-              <label>Telefone</label>
-              <Controller
-                name="telefone"
-                control={control}
-                render={({ field }) => (
-                  <IMaskInput
-                    mask="(00) 00000-0000"
-                    value={field.value || ""}
-                    onAccept={field.onChange}
-                    className={`w-full border rounded-md p-2 ${
-                      errors.telefone ? "border-red-500" : "border-gray-300"
+            <div className="flex flex-col items-center bg-gray rounded-2xl p-4">
+              <div className="flex justify-center w-full gap-3">
+                {/* Nome Completo */}
+                <div>
+                  <label className="block mb-1 font-medium">
+                    Nome Completo
+                  </label>
+                  <input
+                    type="text"
+                    {...register("nome_completo")}
+                    className={`w-[275px] rounded-md border p-2 bg-white ${
+                      errors.nome_completo ? "border-red-500" : ""
                     }`}
+                    placeholder="Nome completo"
                   />
-                )}
-              />
-              {errors.telefone && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.telefone.message}
-                </p>
-              )}
-            </div>
+                  {errors.nome_completo && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.nome_completo.message}
+                    </p>
+                  )}
+                </div>
 
-            {/* CPF */}
-            <div>
-              <label>CPF</label>
-              <Controller
-                name="cpf"
-                control={control}
-                render={({ field }) => (
-                  <IMaskInput
-                    mask="000.000.000-00"
-                    value={field.value || ""}
-                    onAccept={field.onChange}
-                    className={`w-full border rounded-md p-2 ${
-                      errors.cpf ? "border-red-500" : "border-gray-300"
+                {/* Email */}
+                <div>
+                  <label className="block mb-1 font-medium">Email</label>
+                  <input
+                    type="email"
+                    {...register("email")}
+                    className={`w-[275px] rounded-md border p-2 bg-white ${
+                      errors.email ? "border-red-500" : ""
                     }`}
+                    placeholder="Email"
                   />
-                )}
-              />
-              {errors.cpf && (
-                <p className="text-sm text-red-500 mt-1">
-                  {errors.cpf.message}
-                </p>
-              )}
+                  {errors.email && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.email.message}
+                    </p>
+                  )}
+                </div>
+              </div>
+
+              <div className="flex justify-center w-full gap-3 mt-3">
+                {/* Telefone */}
+                <div>
+                  <label className="block mb-1 font-medium">Telefone</label>
+                  <Controller
+                    name="telefone"
+                    control={control}
+                    render={({ field }) => (
+                      <IMaskInput
+                        mask="(00) 00000-0000"
+                        value={field.value}
+                        onAccept={field.onChange}
+                        className={`w-[275px] rounded-md border p-2 bg-white ${
+                          errors.telefone ? "border-red-500" : ""
+                        }`}
+                        placeholder="Telefone"
+                      />
+                    )}
+                  />
+                  {errors.telefone && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.telefone.message}
+                    </p>
+                  )}
+                </div>
+
+                {/* CPF */}
+                <div>
+                  <label className="block mb-1 font-medium">CPF</label>
+                  <Controller
+                    name="cpf"
+                    control={control}
+                    render={({ field }) => (
+                      <IMaskInput
+                        mask="000.000.000-00"
+                        value={field.value}
+                        onAccept={field.onChange}
+                        className={`w-[275px] rounded-md border p-2 bg-white ${
+                          errors.cpf ? "border-red-500" : ""
+                        }`}
+                        placeholder="CPF"
+                      />
+                    )}
+                  />
+                  {errors.cpf && (
+                    <p className="text-red-500 text-sm mt-1">
+                      {errors.cpf.message}
+                    </p>
+                  )}
+                </div>
+              </div>
             </div>
 
-            <div className="mt-6 flex justify-end space-x-2">
+            {/* Botões */}
+            <div className="mt-6 flex justify-end gap-4">
               <button
                 type="button"
                 onClick={onClose}
-                className="rounded-md bg-gray-200 px-4 py-2 text-sm font-medium hover:bg-gray-300"
+                className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition"
               >
                 Cancelar
               </button>
+
               <button
                 type="submit"
                 disabled={isSubmitting}
-                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet-700 disabled:bg-violet-400"
+                className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition disabled:bg-violet-400"
               >
-                {isSubmitting ? "A guardar..." : "Salvar Alterações"}
+                {isSubmitting ? "Salvando..." : "Salvar"}
               </button>
             </div>
           </form>
