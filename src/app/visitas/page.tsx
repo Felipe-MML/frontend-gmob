@@ -130,10 +130,6 @@ const VisitasPageContent = () => {
       <div className="w-full max-w-6xl">
         <div className="flex justify-between items-center mb-8">
           <PageTitle title="Tabela de Visitas Agendadas" />
-          <AddButton
-            text="+ Adicionar"
-            openModal={() => setIsAddModalOpen(true)}
-          />
         </div>
 
         <div className="w-full mt-5">
