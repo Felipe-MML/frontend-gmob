@@ -114,8 +114,6 @@ export const createImovel = async (
     let headers = {};
     const { data } = await api.post<Imovel>("/imoveis", { ...imovelData, imagens: undefined });
 
-    console.log("dataImovel", data)
-
     if (imovelData.imagens && imovelData.imagens.length > 0) {
       const formData = new FormData();
 
@@ -126,9 +124,7 @@ export const createImovel = async (
 
       headers = { "Content-Type": "multipart/form-data" };
 
-      const { data: dataImagens } = await api.post<Imovel>(`/imoveis/${data.imovel_id}/imagens`, formData, { headers });
-
-      console.log("dataImagens", dataImagens)
+      await api.post<Imovel>(`/imoveis/${data.imovel_id}/imagens`, formData, { headers });
     }
 
     return data;

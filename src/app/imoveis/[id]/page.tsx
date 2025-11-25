@@ -38,7 +38,6 @@ const ImovelPageContent = () => {
 
         const imovelData = await getImovelById(id);
         setImovel(imovelData);
-        console.log(imovelData)
 
         if (imovelData && imovelData.corretor_id) {
           const corretorData = await getCorretorById(
