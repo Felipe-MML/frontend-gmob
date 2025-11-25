@@ -4,7 +4,7 @@ import React, { useEffect, useState } from "react";
 import { FaPencilAlt, FaTrash, FaEye } from "react-icons/fa";
 
 // API
-import { UpdateImovelDto } from "@/services/imovelService";
+import { UpdateImovelDto, Imovel } from "@/services/imovelService";
 
 // Hooks
 import { useAuth } from "@/context/AuthContext";
@@ -26,19 +26,7 @@ import StatusFilter from "@/components/statusFilter";
 import TextFilter from "@/components/textFilter";
 import { toast } from "react-toastify";
 
-interface Imovel {
-  imovel_id: number;
-  status: string;
-  estado: string;
-  cidade: string;
-  rua: string;
-  numero: string;
-  valor: number;
-  area: number;
-  data_cadastro: string;
-  corretor_id: number;
-  tipo_imovel_id: number;
-}
+
 
 const ImoveisPageContent = () => {
   const { user } = useAuth();
@@ -80,7 +68,7 @@ const ImoveisPageContent = () => {
   }, [statusFilter, estadoFilter, cidadeFilter, setParams]);
 
   const columns: ColumDef<Imovel>[] = [
-    { accessorKey: "status", header: "Status" },
+    { accessorKey: "disponibilidade", header: "Disponibilidade" },
     { accessorKey: "estado", header: "Estado" },
     { accessorKey: "cidade", header: "Cidade" },
     { accessorKey: "rua", header: "Rua" },

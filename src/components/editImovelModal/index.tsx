@@ -38,7 +38,7 @@ const EditImovelModal = ({
 
   const [tiposImoveis, setTiposImoveis] = useState<TipoImovel[]>([]);
   const [tipoImovelId, setTipoImovelId] = useState<number | "">("");
-  const [status, setStatus] = useState("disponivel");
+  const [status, setStatus] = useState("ambos");
   const [estado, setEstado] = useState("");
   const [cidade, setCidade] = useState("");
   const [rua, setRua] = useState("");
@@ -56,7 +56,7 @@ const EditImovelModal = ({
   useEffect(() => {
     if (imovel) {
       setTipoImovelId(imovel.tipo_imovel_id);
-      setStatus(imovel.status);
+      setStatus(imovel.disponibilidade);
       setEstado(imovel.estado);
       setCidade(imovel.cidade);
       setRua(imovel.rua);
@@ -85,7 +85,7 @@ const EditImovelModal = ({
     try {
       const imovelData: UpdateImovelDto = {
         tipo_imovel_id: tipoImovelId as number,
-        status,
+        disponibilidade: status,
         estado,
         cidade,
         rua,
@@ -162,7 +162,7 @@ const EditImovelModal = ({
                       {/* Status */}
                       <div>
                         <label
-                          htmlFor="status"
+                          htmlFor="disponibilidade"
                           className="block mb-1 font-medium"
                         >
                           Status
@@ -172,14 +172,14 @@ const EditImovelModal = ({
                           onValueChange={(value) => setStatus(value)}
                         >
                           <SelectTrigger className="w-[275px] py-5 bg-white shadow-none">
-                            <SelectValue placeholder="Selecione o status" />
+                            <SelectValue placeholder="Selecione a disponibilidade" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="disponivel">
-                              Disponível
+                            <SelectItem value="ambos">
+                              Ambos
                             </SelectItem>
-                            <SelectItem value="vendido">Vendido</SelectItem>
-                            <SelectItem value="alugado">Alugado</SelectItem>
+                            <SelectItem value="venda">Venda</SelectItem>
+                            <SelectItem value="aluguel">Aluguel</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>

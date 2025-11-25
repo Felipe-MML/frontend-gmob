@@ -11,7 +11,7 @@ export interface TableProps<T> {
   columns: ColumDef<T>[];
 }
 
-const Table = <T extends {}>({ data, columns }: TableProps<T>) => {
+const Table = <T extends object>({ data, columns }: TableProps<T>) => {
   return (
     <div className="overflow-x-auto rounded-lg border border-gray-200 bg-white">
       <table className="min-w-full divide-y-2 divide-gray-200 text-sm">

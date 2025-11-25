@@ -23,6 +23,7 @@ import {
 
 import { toast } from "react-toastify";
 import { Value } from "@radix-ui/react-select";
+import { FileUploader } from "../ui/FileUploader";
 
 interface AddImovelModalProps {
   open: boolean;
@@ -44,6 +45,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
   const [numeroComodos, setNumeroComodos] = useState("");
   const [descricao, setDescricao] = useState("");
   const [complemento, setComplemento] = useState("");
+  const [imagens, setImagens] = useState<File[]>([]);
 
   useEffect(() => {
     if (open) {
@@ -76,7 +78,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
     try {
       await onSave({
         tipo_imovel_id: tipoImovelId as number,
-        status,
+        disponibilidade: status,
         estado,
         cidade,
         rua,
@@ -86,6 +88,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         area: parseFloat(area),
         descricao: descricao,
         complemento: complemento,
+        imagens: imagens,
       });
 
       // Reset campos
@@ -98,6 +101,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       setValor("");
       setArea("");
       setDescricao("");
+      setImagens([]);
       setStep(1);
       onClose();
       toast.success("Imóvel cadastrado com sucesso!");
@@ -113,7 +117,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         className="fixed inset-0 bg-black/30 transition-opacity data-closed:opacity-0 data-enter:duration-300 data-enter:ease-out data-leave:duration-200 data-leave:ease-in"
       />
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
-        <DialogPanel className="w-[695px] h-[638px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
+        <DialogPanel className="w-[695px] min-h-[638px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
           <DialogTitle className="text-3xl font-bold">
             Adicionar Novo Imóvel
           </DialogTitle>
@@ -121,6 +125,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
           <h2 className="mt-10 text-2xl font-bold border-b-1 p-2 border-gray-400">
             {step == 1 && "Informações do Imóvel"}
             {step == 2 && "Informações de Endereço"}
+            {step == 3 && "Imagens do Imóvel"}
           </h2>
           <form onSubmit={handleSubmit} className="mt-4 space-y-4">
             <div className=" min-h-98">
@@ -161,24 +166,24 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                       {/* Status */}
                       <div>
                         <label
-                          htmlFor="status"
+                          htmlFor="disponibilidade"
                           className="block mb-1 font-medium"
                         >
-                          Status
+                          Disponibilidade
                         </label>
                         <Select
                           value={status}
                           onValueChange={(value) => setStatus(value)}
                         >
                           <SelectTrigger className="w-[275px] py-5 bg-white shadow-none">
-                            <SelectValue placeholder="Selecione o status" />
+                            <SelectValue placeholder="Selecione a disponibilidade" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="disponivel">
-                              Disponível
+                            <SelectItem value="ambos">
+                              Ambos
                             </SelectItem>
-                            <SelectItem value="vendido">Vendido</SelectItem>
-                            <SelectItem value="alugado">Alugado</SelectItem>
+                            <SelectItem value="venda">Venda</SelectItem>
+                            <SelectItem value="aluguel">Aluguel</SelectItem>
                           </SelectContent>
                         </Select>
                       </div>
@@ -358,23 +363,72 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                         placeholder="Detalhes adicionais..."
                       />
                     </div>
+
+                  </div>
+                )}
+
+                {step == 3 && (
+                  <div className="flex flex-col gap-2">
+                    {/* File Uploader */}
+                    <div className="w-full mt-4">
+                      <label className="block mb-1 font-medium">
+                        Imagens do Imóvel
+                      </label>
+                      <FileUploader
+                        onFilesSelected={setImagens}
+                        initialFiles={imagens}
+                        maxFiles={10}
+                      />
+                    </div>
                   </div>
                 )}
               </div>
             </div>
             <div className="mt-6 flex justify-between items-center space-x-2 ">
-              <p>Página {step} de 2</p>
-              {step == 1 && (
-                <button
-                  onClick={nextStep}
-                  className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition duration-300"
-                >
-                  Próximo
-                </button>
-              )}
-              {step == 2 && (
+              <p>Página {step} de 3</p>
+
+              {step === 1 && (
                 <div className="flex gap-4">
                   <button
+                    type="button"
+                    onClick={onClose}
+                    className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition duration-300"
+                  >
+                    Cancelar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition duration-300"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              )}
+
+              {step === 2 && (
+                <div className="flex gap-4">
+                  <button
+                    type="button"
+                    onClick={prevStep}
+                    className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition duration-300"
+                  >
+                    Voltar
+                  </button>
+                  <button
+                    type="button"
+                    onClick={nextStep}
+                    className="rounded-md bg-button px-4 py-2 text-sm font-medium text-white hover:bg-violet transition duration-300"
+                  >
+                    Próximo
+                  </button>
+                </div>
+              )}
+
+              {step === 3 && (
+                <div className="flex gap-4">
+                  <button
+                    type="button"
                     onClick={prevStep}
                     className="rounded-md bg-gray-400 px-4 py-2 text-sm font-medium text-white hover:bg-gray-600 transition duration-300"
                   >
