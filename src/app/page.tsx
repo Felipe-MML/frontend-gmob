@@ -57,7 +57,7 @@ const DashboardPageContent = () => {
         </p>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         <div className="flex justify-between items-center bg-white p-6 rounded-lg shadow-md w-auto">
           <div>
             <h3 className="text-gray-500 mb-2">Total de Imóveis</h3>
@@ -96,9 +96,35 @@ const DashboardPageContent = () => {
         <div className="bg-white p-6 rounded-lg shadow-md w-auto">
           <div className="flex justify-between items-center">
             <div>
-              <h3 className="text-gray-500 mb-2">Total de Transações</h3>
+              <h3 className="text-gray-500 mb-2">Total de Vendas</h3>
               <p className="text-3xl font-bold text-gray-800">
                 R$ {metricas.totalVendas.toLocaleString("pt-BR")}
+              </p>
+            </div>
+            <div className="bg-yellow-200 p-4 rounded-2xl">
+              <FaDollarSign className="text-3xl text-yellow-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md w-auto">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-gray-500 mb-2">Comissão de Vendas</h3>
+              <p className="text-3xl font-bold text-gray-800">
+                R$ {metricas.comissaoVendas.toLocaleString("pt-BR")}
+              </p>
+            </div>
+            <div className="bg-yellow-200 p-4 rounded-2xl">
+              <FaDollarSign className="text-3xl text-yellow-600" />
+            </div>
+          </div>
+        </div>
+        <div className="bg-white p-6 rounded-lg shadow-md w-auto">
+          <div className="flex justify-between items-center">
+            <div>
+              <h3 className="text-gray-500 mb-2">Comissão de Aluguéis</h3>
+              <p className="text-3xl font-bold text-gray-800">
+                R$ {metricas.comissaoAluguel.toLocaleString("pt-BR")}
               </p>
             </div>
             <div className="bg-yellow-200 p-4 rounded-2xl">

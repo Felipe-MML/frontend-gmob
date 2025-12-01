@@ -7,6 +7,8 @@ export interface Metricas {
   totalClientes: number;
   totalTransacoes: number;
   totalVendas: number;
+  comissaoVendas: number;
+  comissaoAluguel: number;
 }
 
 export const getMetricas = async (): Promise<Metricas> => {
