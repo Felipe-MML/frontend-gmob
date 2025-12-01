@@ -9,6 +9,13 @@ import { getImovelById, Imovel } from "@/services/imovelService";
 import { getCorretorById, Corretor } from "@/services/corretorService";
 
 import AgendarVisitaModal from "@/components/agendarVisitaModal";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 const ImovelPageContent = () => {
   const params = useParams();
@@ -63,6 +70,31 @@ const ImovelPageContent = () => {
   return (
     <div className="w-full max-w-4xl mx-auto">
       <div className="bg-white p-8 rounded-lg shadow-md">
+        {imovel.imagens && imovel.imagens.length > 0 ? (
+          <div className="w-full flex justify-center mb-6">
+            <Carousel className="w-full max-w-lg">
+              <CarouselContent>
+                {imovel.imagens.map((imagem, index) => (
+                  <CarouselItem key={index}>
+                    <div className="p-1">
+                      <img
+                        src={imagem}
+                        alt={`Imagem do imóvel ${index + 1}`}
+                        className="w-full h-64 object-cover rounded-md"
+                      />
+                    </div>
+                  </CarouselItem>
+                ))}
+              </CarouselContent>
+              <CarouselPrevious />
+              <CarouselNext />
+            </Carousel>
+          </div>
+        ) : (
+          <div className="w-full h-64 bg-gray-200 flex items-center justify-center rounded-md mb-6">
+            <span className="text-gray-500">Sem imagens disponíveis</span>
+          </div>
+        )}
         <h1 className="text-3xl font-bold text-gray-800">
           Imóvel em {imovel.rua}, {imovel.numero}
         </h1>
@@ -79,7 +111,7 @@ const ImovelPageContent = () => {
               <span className="text-sm font-semibold text-gray-500">
                 Status
               </span>
-              <p className="text-gray-800 capitalize">{imovel.status}</p>
+              <p className="text-gray-800 capitalize">{imovel.disponibilidade}</p>
             </div>
             <div>
               <span className="text-sm font-semibold text-gray-500">Valor</span>
@@ -131,7 +163,7 @@ const ImovelPageContent = () => {
               </span>
               <p className="text-gray-800">{imovel.complemento || "N/A"}</p>
             </div>
-            {imovel.status === "disponivel" && (
+            {imovel.disponibilidade && (
               <div className="mt-8 gap-3 flex ">
                 <button
                   onClick={() => setIsTransacaoModalOpen(true)}

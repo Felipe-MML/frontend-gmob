@@ -5,7 +5,7 @@ export interface Imovel {
   imovel_id: number;
   corretor_id: number;
   tipo_imovel_id: number;
-  status: string;
+  disponibilidade: string;
   estado: string;
   cidade: string;
   rua: string;
@@ -16,11 +16,12 @@ export interface Imovel {
   numero_comodos?: number;
   descricao?: string;
   data_cadastro: string;
+  imagens: string[];
 }
 
 export interface CreateImovelDto {
   tipo_imovel_id: number;
-  status: string;
+  disponibilidade: string;
   estado: string;
   cidade: string;
   rua: string;
@@ -30,9 +31,10 @@ export interface CreateImovelDto {
   area: number;
   numero_comodos: number;
   descricao?: string;
+  imagens?: File[];
 }
 
-export interface UpdateImovelDto extends Partial<CreateImovelDto> {}
+export type UpdateImovelDto = Partial<CreateImovelDto>;
 
 interface ApiImoveisResponse {
   data: Imovel[];
@@ -109,7 +111,22 @@ export const createImovel = async (
   imovelData: CreateImovelDto
 ): Promise<Imovel> => {
   try {
-    const { data } = await api.post<Imovel>("/imoveis", imovelData);
+    let headers = {};
+    const { data } = await api.post<Imovel>("/imoveis", { ...imovelData, imagens: undefined });
+
+    if (imovelData.imagens && imovelData.imagens.length > 0) {
+      const formData = new FormData();
+
+      // Append images
+      imovelData.imagens.forEach((file) => {
+        formData.append("files", file);
+      });
+
+      headers = { "Content-Type": "multipart/form-data" };
+
+      await api.post<Imovel>(`/imoveis/${data.imovel_id}/imagens`, formData, { headers });
+    }
+
     return data;
   } catch (error) {
     console.error("Erro ao criar imóvel:", error);
