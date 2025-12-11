@@ -116,7 +116,7 @@ const EditImovelModal = ({
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <DialogPanel className="w-[695px] h-[638px] max-h-[vh] rounded-lg bg-white p-6 shadow-xl">
           <DialogTitle className="text-3xl font-bold">
-            Adicionar Novo Imóvel
+            Editar Imóvel
           </DialogTitle>
 
           <h2 className="mt-10 text-2xl font-bold border-b-1 p-2 border-gray-400">
@@ -175,9 +175,7 @@ const EditImovelModal = ({
                             <SelectValue placeholder="Selecione a disponibilidade" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="ambos">
-                              Ambos
-                            </SelectItem>
+                            <SelectItem value="ambos">Ambos</SelectItem>
                             <SelectItem value="venda">Venda</SelectItem>
                             <SelectItem value="aluguel">Aluguel</SelectItem>
                           </SelectContent>
