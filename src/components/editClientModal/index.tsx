@@ -90,7 +90,7 @@ export default function EditClienteModal({
       <div className="fixed inset-0 flex w-screen items-center justify-center p-4">
         <DialogPanel className="w-[695px] h-auto rounded-lg bg-white p-6 shadow-xl">
           <DialogTitle className="text-3xl font-bold">
-            Adicionar Novo Cliente
+            Editar Cliente
           </DialogTitle>
 
           <h2 className="mt-10 text-2xl font-bold border-b-1 p-2 border-gray-400">
