@@ -12,11 +12,13 @@ export interface Imovel {
   numero: string;
   complemento?: string;
   valor: number;
+  valor_aluguel: number;
+  status?: string;
   area: number;
   numero_comodos?: number;
   descricao?: string;
   data_cadastro: string;
-  imagens: string[];
+  imagens: { imagem_id: number; url: string }[];
 }
 
 export interface CreateImovelDto {
@@ -28,6 +30,7 @@ export interface CreateImovelDto {
   numero: string;
   complemento?: string;
   valor: number;
+  valor_aluguel: number;
   area: number;
   numero_comodos: number;
   descricao?: string;
@@ -112,7 +115,10 @@ export const createImovel = async (
 ): Promise<Imovel> => {
   try {
     let headers = {};
-    const { data } = await api.post<Imovel>("/imoveis", { ...imovelData, imagens: undefined });
+    const { data } = await api.post<Imovel>("/imoveis", {
+      ...imovelData,
+      imagens: undefined,
+    });
 
     if (imovelData.imagens && imovelData.imagens.length > 0) {
       const formData = new FormData();
@@ -124,7 +130,9 @@ export const createImovel = async (
 
       headers = { "Content-Type": "multipart/form-data" };
 
-      await api.post<Imovel>(`/imoveis/${data.imovel_id}/imagens`, formData, { headers });
+      await api.post<Imovel>(`/imoveis/${data.imovel_id}/imagens`, formData, {
+        headers,
+      });
     }
 
     return data;

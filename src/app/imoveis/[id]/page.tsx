@@ -16,6 +16,7 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
+import Image from "next/image";
 
 const ImovelPageContent = () => {
   const params = useParams();
@@ -77,8 +78,10 @@ const ImovelPageContent = () => {
                 {imovel.imagens.map((imagem, index) => (
                   <CarouselItem key={index}>
                     <div className="p-1">
-                      <img
-                        src={imagem}
+                      <Image
+                        src={imagem.url}
+                        width={500}
+                        height={500}
                         alt={`Imagem do imóvel ${index + 1}`}
                         className="w-full h-64 object-cover rounded-md"
                       />
@@ -111,13 +114,27 @@ const ImovelPageContent = () => {
               <span className="text-sm font-semibold text-gray-500">
                 Status
               </span>
-              <p className="text-gray-800 capitalize">{imovel.disponibilidade}</p>
-            </div>
-            <div>
-              <span className="text-sm font-semibold text-gray-500">Valor</span>
-              <p className="text-gray-800 font-bold text-lg">
-                R$ {Number(imovel.valor).toLocaleString("pt-BR")}
+              <p className="text-gray-800 capitalize">
+                {imovel.disponibilidade}
               </p>
+            </div>
+            <div className="flex flex-wrap justify-between">
+              <div>
+                <span className="text-sm font-semibold text-gray-500">
+                  Valor de venda
+                </span>
+                <p className="text-gray-800 font-bold text-lg">
+                  R$ {Number(imovel.valor).toLocaleString("pt-BR")}
+                </p>
+              </div>
+              <div>
+                <span className="text-sm font-semibold text-gray-500">
+                  Valor de aluguel
+                </span>
+                <p className="text-gray-800 font-bold text-lg">
+                  R$ {Number(imovel.valor_aluguel).toLocaleString("pt-BR")}
+                </p>
+              </div>
             </div>
             <div>
               <span className="text-sm font-semibold text-gray-500">Área</span>
@@ -163,7 +180,7 @@ const ImovelPageContent = () => {
               </span>
               <p className="text-gray-800">{imovel.complemento || "N/A"}</p>
             </div>
-            {imovel.disponibilidade && (
+            {imovel.disponibilidade && imovel.status === "disponivel" && (
               <div className="mt-8 gap-3 flex ">
                 <button
                   onClick={() => setIsTransacaoModalOpen(true)}
