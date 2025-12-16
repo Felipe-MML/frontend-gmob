@@ -22,7 +22,6 @@ import {
 } from "@/services/imovelService";
 
 import { toast } from "react-toastify";
-import { Value } from "@radix-ui/react-select";
 import { FileUploader } from "../ui/FileUploader";
 
 interface AddImovelModalProps {
@@ -40,7 +39,8 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
   const [cidade, setCidade] = useState("");
   const [rua, setRua] = useState("");
   const [numero, setNumero] = useState("");
-  const [valor, setValor] = useState("");
+  const [valor_venda, setValorVenda] = useState("");
+  const [valor_aluguel, setValorAluguel] = useState("");
   const [area, setArea] = useState("");
   const [numeroComodos, setNumeroComodos] = useState("");
   const [descricao, setDescricao] = useState("");
@@ -68,7 +68,8 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       !cidade ||
       !rua ||
       !numero ||
-      !valor ||
+      !valor_venda ||
+      !valor_aluguel ||
       !area
     ) {
       toast.error("Por favor, preencha todos os campos.");
@@ -84,7 +85,8 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
         rua,
         numero,
         numero_comodos: parseInt(numeroComodos) || 0,
-        valor: parseFloat(valor),
+        valor: parseFloat(valor_venda),
+        valor_aluguel: parseFloat(valor_aluguel),
         area: parseFloat(area),
         descricao: descricao,
         complemento: complemento,
@@ -98,7 +100,8 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
       setCidade("");
       setRua("");
       setNumero("");
-      setValor("");
+      setValorVenda("");
+      setValorAluguel("");
       setArea("");
       setDescricao("");
       setImagens([]);
@@ -179,9 +182,7 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                             <SelectValue placeholder="Selecione a disponibilidade" />
                           </SelectTrigger>
                           <SelectContent>
-                            <SelectItem value="ambos">
-                              Ambos
-                            </SelectItem>
+                            <SelectItem value="ambos">Ambos</SelectItem>
                             <SelectItem value="venda">Venda</SelectItem>
                             <SelectItem value="aluguel">Aluguel</SelectItem>
                           </SelectContent>
@@ -229,21 +230,44 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                         />
                       </div>
                     </div>
+                    <div className="flex w-full gap-3">
+                      {/* Valor venda */}
+                      <div>
+                        <label
+                          htmlFor="valor_venda"
+                          className="block mb-1 font-medium"
+                        >
+                          Valor venda
+                        </label>
+                        <input
+                          id="valor_venda"
+                          type="number"
+                          value={valor_venda}
+                          onChange={(e) => setValorVenda(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border border-gray-300 p-2 bg-white"
+                          placeholder="Valor venda"
+                        />
+                      </div>
 
-                    {/* Valor */}
-                    <div>
-                      <label htmlFor="valor" className="block mb-1 font-medium">
-                        Valor
-                      </label>
-                      <input
-                        id="valor"
-                        type="number"
-                        value={valor}
-                        onChange={(e) => setValor(e.target.value)}
-                        required
-                        className="w-[275px] rounded-md border border-gray-300 p-2 bg-white"
-                        placeholder="Valor"
-                      />
+                      {/* Valor aluguel */}
+                      <div>
+                        <label
+                          htmlFor="valor_aluguel"
+                          className="block mb-1 font-medium"
+                        >
+                          Valor aluguel
+                        </label>
+                        <input
+                          id="valor_aluguel"
+                          type="number"
+                          value={valor_aluguel}
+                          onChange={(e) => setValorAluguel(e.target.value)}
+                          required
+                          className="w-[275px] rounded-md border border-gray-300 p-2 bg-white"
+                          placeholder="Valor aluguel"
+                        />
+                      </div>
                     </div>
 
                     {/* Descrição */}
@@ -363,7 +387,6 @@ const AddImovelModal = ({ open, onClose, onSave }: AddImovelModalProps) => {
                         placeholder="Detalhes adicionais..."
                       />
                     </div>
-
                   </div>
                 )}
 
